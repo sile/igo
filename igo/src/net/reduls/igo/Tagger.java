@@ -1,0 +1,141 @@
+package net.reduls.igo;
+
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.ArrayList;
+import net.reduls.igo.dictionary.Matrix;
+import net.reduls.igo.dictionary.WordDic;
+import net.reduls.igo.dictionary.Unknown;
+import net.reduls.igo.dictionary.ViterbiNode;
+
+/**
+ * 形態素解析を行うクラス
+ */
+public final class Tagger {
+    private static final ArrayList<ViterbiNode> BOS_NODES = new ArrayList<ViterbiNode>(1);
+    static {
+	BOS_NODES.add(ViterbiNode.makeBOSEOS());
+    }
+    
+    private final WordDic wdc;
+    private final Unknown unk;
+    private final Matrix  mtx;
+   
+    /**
+     * バイナリ辞書をもとに、この形態素解析器のインスタンスを作成する
+     *
+     * @params バイナリ辞書があるディレクトリ
+     * @throws FileNotFoundException 間違ったディレクトリが指定された場合に送出される
+     * @throws IOException その他の入出力エラーが発生した場合に送出される
+     */
+    public Tagger(String dataDir) throws FileNotFoundException, IOException {
+	wdc = new WordDic(dataDir);
+	unk = new Unknown(dataDir);
+	mtx = new Matrix(dataDir);
+    }
+    
+    /**
+     * 形態素解析を行う
+     *
+     * @params text 解析対象テキスト
+     * @return 解析結果の形態素のリスト
+     */
+    public List<Morpheme> parse(String text) {
+	return parse(text, new ArrayList<Morpheme>(text.length()/2));
+    }
+
+    /**
+     * 形態素解析を行う
+     *
+     * @params text 解析対象テキスト
+     * @params result 解析結果の形態素が追加されるリスト
+     * @return 解析結果の形態素リスト. {@code parse(text,result)=result}
+     */
+    public List<Morpheme> parse(String text, List<Morpheme> result) {
+	final ArrayList<ViterbiNode> tmpRlt = parseImpl(text);
+	
+	for(int i=tmpRlt.size()-1; i >=0; i--) {
+	    final ViterbiNode vn = tmpRlt.get(i);
+	    final String surface = text.substring(vn.start, vn.start+vn.length);
+	    final String feature = wdc.wordData(vn.wordId);
+	    result.add(new Morpheme(surface, feature, vn.start));
+	}
+	return result;
+    }
+
+    /**
+     * 分かち書きを行う
+     *
+     * @params text 分かち書きされるテキスト
+     * @return 分かち書きされた文字列のリスト
+     */
+    public List<String> wakati(String text) {
+	return wakati(text, new ArrayList<String>(text.length()/2));
+    }
+
+    /**
+     * 分かち書きを行う
+     *
+     * @params text 分かち書きされるテキスト
+     * @params result 分かち書き結果の文字列が追加されるリスト
+     * @return 分かち書きされた文字列のリスト. {@code wakati(text,result)=result}
+     */
+    public List<String> wakati(String text, List<String> result) {
+	final ArrayList<ViterbiNode> tmpRlt = parseImpl(text);
+	
+	for(int i=tmpRlt.size()-1; i >=0; i--) {
+	    final ViterbiNode vn = tmpRlt.get(i);
+	    result.add(text.substring(vn.start, vn.start+vn.length));
+	}	
+	return result;
+    }
+    
+    private ArrayList<ViterbiNode> parseImpl(String text) {
+	final int len = text.length();
+	final ArrayList<ArrayList<ViterbiNode>> nodesAry = new ArrayList<ArrayList<ViterbiNode>>(len+1);
+	final ArrayList<ViterbiNode> perResult = new ArrayList<ViterbiNode>();
+	
+	nodesAry.add(BOS_NODES);
+	for(int i=1; i <= len; i++) 
+	    nodesAry.add(new ArrayList<ViterbiNode>());
+	
+	for(int i=0; i < len; i++, perResult.clear()) {
+	    if(nodesAry.get(i).isEmpty()==false) {
+		wdc.search(text, i, perResult);       // 単語辞書から形態素を検索
+		unk.search(text, i, wdc, perResult);  // 未知語辞書から形態素を検索
+
+		final ArrayList<ViterbiNode> prevs = nodesAry.get(i);
+		for(int j=0; j < perResult.size(); j++) {
+                    final ViterbiNode vn = perResult.get(j);
+		    if(vn.isSpace)
+			nodesAry.get(i+vn.length).addAll(prevs);
+		    else
+			nodesAry.get(i+vn.length).add(setMincostNode(vn,prevs));
+		}
+	    }
+	}
+
+	ViterbiNode cur = setMincostNode(ViterbiNode.makeBOSEOS(), nodesAry.get(len)).prev;
+	ArrayList<ViterbiNode> tmpRlt = new ArrayList<ViterbiNode>(len/2);
+	for(; cur.prev != null; cur = cur.prev)
+	    tmpRlt.add(cur);
+	return tmpRlt;
+    }
+
+    private ViterbiNode setMincostNode(ViterbiNode vn, ArrayList<ViterbiNode> prevs) {
+	final ViterbiNode f = vn.prev = prevs.get(0);
+        vn.cost = f.cost + mtx.linkCost(f.rightId, vn.leftId);
+
+        for(int i=1; i < prevs.size(); i++) {
+            final ViterbiNode p = prevs.get(i);
+	    final int cost = p.cost + mtx.linkCost(p.rightId, vn.leftId);
+	    if(cost < vn.cost) {
+		vn.cost = cost;
+		vn.prev = p;
+	    }
+	}
+	vn.cost += wdc.cost(vn.wordId);
+	return vn;
+    }
+}
