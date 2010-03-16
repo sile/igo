@@ -23,7 +23,7 @@ public class MorphemeTokenizer extends Tokenizer {
     private OffsetAttribute offsetAtt;
     private TypeAttribute typeAtt;
 
-    public IgoTokenizer(Tagger tagger, Reader in) {
+    public MorphemeTokenizer(Tagger tagger, Reader in) {
 	super(in);
 	this.tagger = tagger;
 	br = new BufferedReader(in);

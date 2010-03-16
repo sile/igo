@@ -9,7 +9,7 @@ import net.reduls.igo.Tagger;
 public class MorphemeAnalyzer extends Analyzer {
     private final Tagger tagger;
 
-    public IgoAnalyzer(Tagger tagger) {
+    public MorphemeAnalyzer(Tagger tagger) {
 	this.tagger = tagger;
     }
 
