@@ -1,4 +1,4 @@
-package net.reduls.igo.analysis;
+package net.reduls.igo.analysis.ipadic;
 
 import java.io.Reader;
 import java.io.IOException;
