@@ -14,8 +14,10 @@ import net.reduls.igo.Morpheme;
 
 /**
  * IPA辞書に基づきテキストを形態素(トークン)単位で分割するトークナイザ
+ * 分割された各形態素(トークン)は、その原形にまとめられる
+ * ex) '買った' ==分割==> '買っ'+'た' ==原形変換==> '買う'+'た'
  */
-public class IpadicTokenizer extends Tokenizer {
+public final class IpadicTokenizer extends Tokenizer {
     /** 形態素解析器 */
     private final Tagger tagger;
 
