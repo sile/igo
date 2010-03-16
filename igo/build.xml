@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
 
 <project name="igo" default="jar"  basedir=".">
-  <property name="version" value="0.2.2" />
+  <property name="version" value="0.3.0" />
   <property name="src.dir" value="src"/>
   <property name="classes.dir" value="classes"/>
   <property name="javadoc.dir" value="docs"/>
