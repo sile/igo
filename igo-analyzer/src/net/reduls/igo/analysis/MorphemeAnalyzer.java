@@ -15,14 +15,14 @@ public class MorphemeAnalyzer extends Analyzer {
 
     @Override
     public final TokenStream tokenStream(String fieldName, Reader reader) {
-	return new IgoTokenizer(tagger, reader);
+	return new MorphemeTokenizer(tagger, reader);
     }
 
     @Override
     public final TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
-	IgoTokenizer prev = (IgoTokenizer)getPreviousTokenStream();
+	MorphemeTokenizer prev = (MorphemeTokenizer)getPreviousTokenStream();
 	if(prev == null) {
-	    prev = (IgoTokenizer)tokenStream(fieldName, reader);
+	    prev = (MorphemeTokenizer)tokenStream(fieldName, reader);
 	    setPreviousTokenStream(prev);
 	} else {
 	    prev.reset(reader);

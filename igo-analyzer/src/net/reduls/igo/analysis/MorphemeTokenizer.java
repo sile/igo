@@ -82,4 +82,3 @@ public class MorphemeTokenizer extends Tokenizer {
 	return curToken.next();
     }
 }
-
