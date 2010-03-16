@@ -12,7 +12,7 @@ import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import net.reduls.igo.Tagger;
 import net.reduls.igo.Morpheme;
 
-public class MorphemeTokenizer extends Tokenizer {
+public class IpadicTokenizer extends Tokenizer {
     private final Tagger tagger;
     private Iterator<Morpheme> curToken = new ArrayList<Morpheme>().iterator();
     private int offset = 0;
@@ -23,7 +23,7 @@ public class MorphemeTokenizer extends Tokenizer {
     private OffsetAttribute offsetAtt;
     private TypeAttribute typeAtt;
 
-    public MorphemeTokenizer(Tagger tagger, Reader in) {
+    public IpadicTokenizer(Tagger tagger, Reader in) {
 	super(in);
 	this.tagger = tagger;
 	br = new BufferedReader(in);

@@ -6,23 +6,23 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import net.reduls.igo.Tagger;
 
-public class MorphemeAnalyzer extends Analyzer {
+public class IpadicAnalyzer extends Analyzer {
     private final Tagger tagger;
 
-    public MorphemeAnalyzer(Tagger tagger) {
+    public IpadicAnalyzer(Tagger tagger) {
 	this.tagger = tagger;
     }
 
     @Override
     public final TokenStream tokenStream(String fieldName, Reader reader) {
-	return new MorphemeTokenizer(tagger, reader);
+	return new IpadicTokenizer(tagger, reader);
     }
 
     @Override
     public final TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
-	MorphemeTokenizer prev = (MorphemeTokenizer)getPreviousTokenStream();
+	IpadicTokenizer prev = (IpadicTokenizer)getPreviousTokenStream();
 	if(prev == null) {
-	    prev = (MorphemeTokenizer)tokenStream(fieldName, reader);
+	    prev = (IpadicTokenizer)tokenStream(fieldName, reader);
 	    setPreviousTokenStream(prev);
 	} else {
 	    prev.reset(reader);
