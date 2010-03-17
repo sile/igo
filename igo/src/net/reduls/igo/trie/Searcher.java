@@ -28,8 +28,8 @@ public final class Searcher {
 	    final int tailSz = fmis.getInt();
 	    keySetSize = tindSz;
 	    begs = fmis.getIntArray(tindSz);
-	    lens = fmis.getShortArray(tindSz);
 	    base = fmis.getIntArray(nodeSz);
+	    lens = fmis.getShortArray(tindSz);
 	    chck = fmis.getCharArray(nodeSz);
 	    tail = fmis.getString(tailSz);
 	} finally {

@@ -60,13 +60,14 @@ public final class Builder {
 	    fmos.putInt(nodeSize);
 	    fmos.putInt(begs.size());
 	    fmos.putInt(tail.length());
-	    
+
+	    // 4byte
 	    for(Integer n : begs) fmos.putInt(n);
-	    for(Short   n : lens) fmos.putShort(n);
-	    
 	    for(int i=0; i < nodeSize; i++)
 		fmos.putInt(base.get(i, Node.Base.INIT_VALUE));
 
+	    // 2byte
+	    for(Short   n : lens) fmos.putShort(n);
 	    for(int i=0; i < nodeSize; i++)
 		fmos.putChar(chck.get(i, Node.Chck.VACANT_CODE));
 	    
