@@ -149,27 +149,27 @@ public final class WordDic {
 	final FileMappedOutputStream fmosInf = 
 	    new FileMappedOutputStream(outputDir+"/word.inf", (size+1)*(2+2+2+4));
 	try {
-	    for(ArrayList<WordInfo> wlist : ws)
-		for(WordInfo w : wlist) 
-		    fmosInf.putShort(w.leftId);
-	    fmosInf.putShort((short)0);
-	    
-	    for(ArrayList<WordInfo> wlist : ws)
-		for(WordInfo w : wlist) 
-		    fmosInf.putShort(w.rightId);
-	    fmosInf.putShort((short)0);
-	    
-	    for(ArrayList<WordInfo> wlist : ws)
-		for(WordInfo w : wlist) 
-		    fmosInf.putShort(w.cost);
-	    fmosInf.putShort((short)0);
-	    
-	    for(ArrayList<WordInfo> wlist : ws)
+	    for(ArrayList<WordInfo> wlist : ws) // dataOffset
 		for(WordInfo w : wlist) {
 		    fmosInf.putInt(wdat.length());
 		    wdat.append(w.data);
 		}
-	    fmosInf.putInt(wdat.length());
+	    fmosInf.putInt(wdat.length());      
+
+	    for(ArrayList<WordInfo> wlist : ws) // leftId
+		for(WordInfo w : wlist) 
+		    fmosInf.putShort(w.leftId);
+	    fmosInf.putShort((short)0);
+	    
+	    for(ArrayList<WordInfo> wlist : ws) // rightId
+		for(WordInfo w : wlist) 
+		    fmosInf.putShort(w.rightId);
+	    fmosInf.putShort((short)0);
+	    
+	    for(ArrayList<WordInfo> wlist : ws) // cost
+		for(WordInfo w : wlist) 
+		    fmosInf.putShort(w.cost);
+	    fmosInf.putShort((short)0);
 	} finally {
 	    fmosInf.close();
 	}

@@ -19,10 +19,10 @@ final class Word {
 	count = fmis.size()/(2+2+2+4);
 	
 	try {
+	    dataOffsets= fmis.getIntArray(count);
 	    leftIds    = fmis.getShortArray(count);
 	    rightIds   = fmis.getShortArray(count);
 	    costs      = fmis.getShortArray(count);
-	    dataOffsets= fmis.getIntArray(count);
 	} finally {
 	    fmis.close();
 	}
