@@ -53,10 +53,7 @@ public final class Tagger {
      * @return 解析結果の形態素リスト. {@code parse(text,result)=result}
      */
     public List<Morpheme> parse(String text, List<Morpheme> result) {
-	final ArrayList<ViterbiNode> tmpRlt = parseImpl(text);
-	
-	for(int i=tmpRlt.size()-1; i >=0; i--) {
-	    final ViterbiNode vn = tmpRlt.get(i);
+	for(ViterbiNode vn=parseImpl(text); vn!=null; vn=vn.prev) {
 	    final String surface = text.substring(vn.start, vn.start+vn.length);
 	    final String feature = wdc.wordData(vn.wordId);
 	    result.add(new Morpheme(surface, feature, vn.start));
@@ -82,16 +79,12 @@ public final class Tagger {
      * @return 分かち書きされた文字列のリスト. {@code wakati(text,result)=result}
      */
     public List<String> wakati(String text, List<String> result) {
-	final ArrayList<ViterbiNode> tmpRlt = parseImpl(text);
-	
-	for(int i=tmpRlt.size()-1; i >=0; i--) {
-	    final ViterbiNode vn = tmpRlt.get(i);
-	    result.add(text.substring(vn.start, vn.start+vn.length));
-	}	
+	for(ViterbiNode vn=parseImpl(text); vn!=null; vn=vn.prev) 
+	    result.add(text.substring(vn.start, vn.start+vn.length));	
 	return result;
     }
     
-    private ArrayList<ViterbiNode> parseImpl(String text) {
+    private ViterbiNode parseImpl(String text) {
 	final int len = text.length();
 	final ArrayList<ArrayList<ViterbiNode>> nodesAry = new ArrayList<ArrayList<ViterbiNode>>(len+1);
 	final ArrayList<ViterbiNode> perResult = new ArrayList<ViterbiNode>();
@@ -117,10 +110,16 @@ public final class Tagger {
 	}
 
 	ViterbiNode cur = setMincostNode(ViterbiNode.makeBOSEOS(), nodesAry.get(len)).prev;
-	ArrayList<ViterbiNode> tmpRlt = new ArrayList<ViterbiNode>(len/2);
-	for(; cur.prev != null; cur = cur.prev)
-	    tmpRlt.add(cur);
-	return tmpRlt;
+
+        // reverse
+        ViterbiNode head = null;
+        while(cur.prev != null) {
+          final ViterbiNode tmp = cur.prev;
+          cur.prev = head;
+          head = cur;
+          cur = tmp;
+        }
+        return head;
     }
 
     private ViterbiNode setMincostNode(ViterbiNode vn, ArrayList<ViterbiNode> prevs) {
