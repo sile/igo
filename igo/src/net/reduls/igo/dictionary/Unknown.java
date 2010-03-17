@@ -15,7 +15,7 @@ public final class Unknown {
 	spaceId = category.category(' ').id;  // NOTE: ' 'の文字カテゴリはSPACEに予約されている
     }
     
-    public void search(String text, int start, WordDic wdic, List<ViterbiNode> result) {
+    public void search(CharSequence text, int start, WordDic wdic, List<ViterbiNode> result) {
 	final char ch = text.charAt(start);
 	final CharCategory.Category ct = category.category(ch);
 

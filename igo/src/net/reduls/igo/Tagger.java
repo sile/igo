@@ -41,7 +41,7 @@ public final class Tagger {
      * @params text 解析対象テキスト
      * @return 解析結果の形態素のリスト
      */
-    public List<Morpheme> parse(String text) {
+    public List<Morpheme> parse(CharSequence text) {
 	return parse(text, new ArrayList<Morpheme>(text.length()/2));
     }
 
@@ -52,9 +52,9 @@ public final class Tagger {
      * @params result 解析結果の形態素が追加されるリスト
      * @return 解析結果の形態素リスト. {@code parse(text,result)=result}
      */
-    public List<Morpheme> parse(String text, List<Morpheme> result) {
+    public List<Morpheme> parse(CharSequence text, List<Morpheme> result) {
 	for(ViterbiNode vn=parseImpl(text); vn!=null; vn=vn.prev) {
-	    final String surface = text.substring(vn.start, vn.start+vn.length);
+	    final String surface = text.subSequence(vn.start, vn.start+vn.length).toString();
 	    final String feature = wdc.wordData(vn.wordId);
 	    result.add(new Morpheme(surface, feature, vn.start));
 	}
@@ -67,7 +67,7 @@ public final class Tagger {
      * @params text 分かち書きされるテキスト
      * @return 分かち書きされた文字列のリスト
      */
-    public List<String> wakati(String text) {
+    public List<String> wakati(CharSequence text) {
 	return wakati(text, new ArrayList<String>(text.length()/2));
     }
 
@@ -78,13 +78,13 @@ public final class Tagger {
      * @params result 分かち書き結果の文字列が追加されるリスト
      * @return 分かち書きされた文字列のリスト. {@code wakati(text,result)=result}
      */
-    public List<String> wakati(String text, List<String> result) {
+    public List<String> wakati(CharSequence text, List<String> result) {
 	for(ViterbiNode vn=parseImpl(text); vn!=null; vn=vn.prev) 
-	    result.add(text.substring(vn.start, vn.start+vn.length));	
+	    result.add(text.subSequence(vn.start, vn.start+vn.length).toString());	
 	return result;
     }
     
-    private ViterbiNode parseImpl(String text) {
+    private ViterbiNode parseImpl(CharSequence text) {
 	final int len = text.length();
 	final ArrayList<ArrayList<ViterbiNode>> nodesAry = new ArrayList<ArrayList<ViterbiNode>>(len+1);
 	final ArrayList<ViterbiNode> perResult = new ArrayList<ViterbiNode>();

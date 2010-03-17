@@ -49,7 +49,7 @@ public final class Searcher {
      * @params key 検索対象のキー文字列
      * @return キーが見つかった場合はそのIDを、見つからなかった場合は-1を返す
      */
-    public int search(String key) {
+    public int search(CharSequence key) {
 	int node = base[0];
 	KeyStream in = new KeyStream(key);
 	
@@ -86,7 +86,7 @@ public final class Searcher {
      * @params start 検索対象となるキー文字列の最初の添字
      * @params fn 一致を検出した場合に呼び出されるメソッドを定義したコールバッククラス
      */
-    public void eachCommonPrefix(String key, int start, Callback fn) {
+    public void eachCommonPrefix(CharSequence key, int start, Callback fn) {
 	int node = base[0];
 	int offset=0;
 	KeyStream in = new KeyStream(key, start);

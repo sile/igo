@@ -3,23 +3,24 @@ package net.reduls.igo.trie;
 /**
  * 文字列を文字のストリームとして扱うためのクラス。
  * readメソッドで個々の文字を順に読み込み、文字列の終端に達した場合には{@code Node.Chck.TERMINATE_CODE}が返される。
+ * XXX: クラス名は不適切
  */
 final class KeyStream implements Comparable<KeyStream> {
-    private final String s;
+    private final CharSequence s;
     private int cur;
     
-    public KeyStream(String key) {
+    public KeyStream(CharSequence key) {
 	s   = key;
 	cur = 0;
     }
     
-    public KeyStream(String key, int start) {
+    public KeyStream(CharSequence key, int start) {
 	s   = key;
 	cur = start;
     }
     
     public int compareTo(KeyStream ks) {
-	return s.substring(cur).compareTo(ks.s.substring(ks.cur));
+	return rest().compareTo(ks.rest());
     }
     
     /**
@@ -27,7 +28,7 @@ final class KeyStream implements Comparable<KeyStream> {
      * ほんの若干だが、パフォーマンスを改善するために導入。
      * 簡潔性のためになくしても良いかもしれない。
      */
-    public boolean startsWith(String prefix, int beg, int len) {
+    public boolean startsWith(CharSequence prefix, int beg, int len) {
 	if(s.length()-cur < len)
 	    return false;
 	
@@ -37,7 +38,7 @@ final class KeyStream implements Comparable<KeyStream> {
 	return true;
     }
     
-    public String rest() { return s.substring(cur); }
+    public String rest() { return s.subSequence(cur,s.length()).toString(); }
     public char   read() { return eos() ? Node.Chck.TERMINATE_CODE : s.charAt(cur++); }
     public boolean eos() { return cur == s.length(); }
 }

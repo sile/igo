@@ -29,7 +29,7 @@ public final class WordDic {
     public short rightId(int wordId) { return word.rightIds[wordId]; }
     public int dataOffset(int wordId) { return word.dataOffsets[wordId]; }
 
-    public void search(String text, int start, List<ViterbiNode> result) {
+    public void search(CharSequence text, int start, List<ViterbiNode> result) {
 	trie.eachCommonPrefix(text, start, new Collect(result));
     }
 

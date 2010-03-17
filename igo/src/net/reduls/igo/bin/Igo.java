@@ -22,9 +22,12 @@ public final class Igo {
 	final ReadLine rl = new ReadLine(System.in);
 	if(doWakati)
 	    for(String s=rl.read(); s != null; s=rl.read()) {
+		tagger.wakati(s);
+		/*
 		for(String w : tagger.wakati(s))
 		    System.out.print(w+" ");
 		System.out.println("");
+		*/
 	    }
 	else
 	    for(String s=rl.read(); s != null; s=rl.read()) {
