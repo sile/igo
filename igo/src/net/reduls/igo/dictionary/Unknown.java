@@ -24,17 +24,14 @@ public final class Unknown {
 	
 	final boolean isSpace = ct.id==spaceId;
 	final int limit = Math.min(text.length(), ct.length+start);
-	boolean finished = false;
 	int i=start;
 	for(; i < limit; i++) { 
 	    wdic.searchFromTrieId(ct.id, start, (i-start)+1, isSpace, result);
-	    if(i+1!=limit && category.isCompatible(ch, text.charAt(i+1)) == false) {
-		finished = true;
-		break;
-	    }
+	    if(i+1!=limit && category.isCompatible(ch, text.charAt(i+1)) == false)
+		return;
 	}
 	
-	if(ct.group && !finished && i < text.length()) {
+	if(ct.group && i < text.length()) {
 	    for(; i < text.length(); i++)
 		if(category.isCompatible(ch, text.charAt(i)) == false) {
 		    wdic.searchFromTrieId(ct.id, start, i-start, isSpace, result);
