@@ -1,7 +1,8 @@
 (defpackage igo.trie
   (:use :common-lisp)
   (:shadow load)
-  (:export load
+  (:export trie
+	   load
 	   each-common-prefix))
 (in-package :igo.trie)
 
@@ -18,7 +19,7 @@
 
 (defmethod print-object ((o trie) stream)
   (print-unreadable-object (o stream :type t)
-    (format stream ":element-count ~D" (trie-element-count o))))
+    (format stream ":element-count ~D" (element-count o))))
 
 (defun load (path)
   (vbs:with-input-file (in path)
@@ -34,7 +35,7 @@
        :tail (vbs:read-sequence in 2 tail-size :signed nil)))))
 
 (defun id (node)
-  (- 1 node))
+  (1- (- node)))
 
 (defun including-tail? (cs node trie &aux (id (id node)))
   (let ((tail (tail trie))

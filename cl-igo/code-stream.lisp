@@ -4,6 +4,7 @@
 	   length
 	   position)
   (:export read
+	   read2
 	   make
 	   end?
 	   length
@@ -51,6 +52,25 @@
 
 	  ((end? code-stream)
 	   (incf cur)
+	   +TERMINATE-CODE+)
+
+	  (t 
+	   (let ((code (code code-stream)))
+	     (if (> code #xFFFF)
+		 (progn (setf surrogate? t)
+			(high-surrogate code))
+	       (progn (incf cur)
+		      code)))))))
+
+;; XXX
+(defun read2 (code-stream)
+  (with-slots (cur surrogate?) code-stream
+    (cond (surrogate? 
+	   (setf surrogate? nil)
+	   (prog1 (low-surrogate (code code-stream))
+	     (incf cur)))
+
+	  ((end? code-stream)
 	   +TERMINATE-CODE+)
 
 	  (t 

@@ -38,8 +38,8 @@
   (vbs:with-input-file (in (merge-pathnames "code2category" root-dir))
     (make-category-set 
      :categorys (load-categorys root-dir)
-     :char->id  (vbs:read-sequence in 4 (/ (vbs:file-size in) 2))
-     :eql-masks (vbs:read-sequence in 4 (/ (vbs:file-size in) 2)))))
+     :char->id  (vbs:read-sequence in 4 (/ (vbs:file-size in) 4 2))
+     :eql-masks (vbs:read-sequence in 4 (/ (vbs:file-size in) 4 2)))))
 
 (defun category (code category-set)
   (with-slots (categorys char->id) category-set
