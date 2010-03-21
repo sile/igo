@@ -51,7 +51,7 @@
 	     (incf cur)))
 
 	  ((end? code-stream)
-	   (incf cur)
+	   ;;(incf cur)
 	   +TERMINATE-CODE+)
 
 	  (t 

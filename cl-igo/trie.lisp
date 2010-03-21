@@ -51,9 +51,10 @@
     (loop FOR code = (code-stream:read cs) DO
       (let ((terminal-idx (+ node code-stream:+TERMINATE-CODE+)))
 	(when (= (aref chck terminal-idx) code-stream:+TERMINATE-CODE+)
-	  (funcall fn (1- (code-stream:position cs)) (id (aref base terminal-idx)))
-	  (when (= code code-stream:+TERMINATE-CODE+)
-	    (return-from each-common-prefix))))
+	  (if (code-stream:end? cs)
+	      (progn (funcall fn (code-stream:position cs) (id (aref base terminal-idx)))
+		     (return-from each-common-prefix))
+	    (funcall fn (1- (code-stream:position cs)) (id (aref base terminal-idx))))))
 
       (prog ((idx (+ node code)))
 	(setf node (aref base idx))

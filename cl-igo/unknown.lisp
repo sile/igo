@@ -24,7 +24,7 @@
 
 (defun search (cs unk wdic result)
   (prog* ((start     (code-stream:position cs))
-	  (code      (code-stream:read2 cs))
+	  (code      (code-stream:read cs))
 	  (categorys (categorys unk))
 	  (ct        (cc:category code categorys)))
     (when (and result
@@ -39,7 +39,7 @@
 	      ;; XXX: (+ start len) => surrogate?
 	      (dic:search-from-trie-id trie-id start (+ start len) space? result wdic))
 	(when (or (code-stream:end? cs)
-		  (not (cc:compatible? code (code-stream:read2 cs) categorys)))
+		  (not (cc:compatible? code (code-stream:read cs) categorys)))
 	  (go :end)))
       
       (when (and (cc:category-group? ct))
@@ -47,7 +47,7 @@
 	    (setf result (dic:search-from-trie-id trie-id start (code-stream:length cs)
 				     space? result wdic))
 	  (progn (loop WHILE (and (not (code-stream:end? cs))
-			 (cc:compatible? code (code-stream:read2 cs) categorys)))
+			 (cc:compatible? code (code-stream:read cs) categorys)))
 			 
 	(setf result 
 	      (dic:search-from-trie-id trie-id start 
