@@ -4,7 +4,6 @@
   (:shadow load
 	   search)
   (:export load
-	   *ipadic-feature-parser*
 	   word-dic
 	   word-data
 	   word-cost
@@ -25,18 +24,6 @@
   (right-ids    #() :type (simple-array (signed-byte 16)))
   (data         #() :type (simple-array t))
   (indices      #() :type (simple-array (signed-byte 32))))
-
-;;;;;;;;;;;;;;;;;;;;
-;;; special variable
-(defvar *ipadic-feature-parser*
-  (lambda (feature)
-    (declare #.igo::*optimize-fastest*
-	     (simple-string feature))
-    (flet ((kw (s) (intern s :keyword))
-	   (kw-if-* (s) (if (string= s "*") (intern s :keyword) s)))
-      (let ((fs (the list (igo::split "," feature))))
-	(nconc (mapcar #'kw      (subseq fs 0 6))
-	       (mapcar #'kw-if-* (subseq fs 6)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; internal function
@@ -85,9 +72,9 @@
 	(indices (word-dic-indices wdic))
 	(trie (word-dic-trie wdic)))
     (trie:each-common-prefix (end id cs trie)
-       (loop FOR i fixnum FROM (aref indices id) BELOW (aref indices (1+ id)) DO
-         (push (vn:make i start end (left-id i wdic) (right-id i wdic) nil)
-	       result)))
+      (loop FOR i fixnum FROM (aref indices id) BELOW (aref indices (1+ id)) DO
+        (push (vn:make i start end (left-id i wdic) (right-id i wdic) nil)
+	      result)))
     (setf (code-stream:position cs) start))
   result)
 

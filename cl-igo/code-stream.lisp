@@ -4,6 +4,7 @@
   (:shadow read 
 	   position)
   (:export read
+	   unread
 	   make
 	   end?
 	   position
@@ -65,3 +66,10 @@
 			(high-surrogate code))
 	       (progn (incf position)
 		      code)))))))
+
+(defun unread (code-stream)
+  (declare (code-stream code-stream))
+  (with-slots (position surrogate?) code-stream
+    (if surrogate? 
+	(setf surrogate? nil)
+      (decf position))))

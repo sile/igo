@@ -13,9 +13,9 @@
 
 (defun split (delim seq &aux (len (length delim)))
   (when (zerop len)
-    (return-from split (list seq))
+    (return-from split (list seq)))
 
   (loop FOR beg = 0 THEN (+ end len)
         FOR end = (search delim seq :start2 beg)
         COLLECT (subseq seq beg end)
-        WHILE end)))
+        WHILE end))

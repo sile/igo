@@ -15,7 +15,7 @@
 
 ;;;;;;;;;;;
 ;;; declaim
-(declaim (inline new-bos/eos)) 
+(declaim (inline new-bos/eos))
 
 ;;;;;;;;;;
 ;;; struct
@@ -23,9 +23,9 @@
 			 (:conc-name ""))
   (cost 0     :type fixnum)
   (prev nil   :type (or null viterbi-node))
-  (word-id 0  :type fixnum)
   (left-id 0  :type fixnum)
   (right-id 0 :type fixnum)
+  (word-id 0  :type fixnum)
   (start 0    :type fixnum)
   (end 0      :type fixnum)
   (space? nil :type boolean))

@@ -29,30 +29,28 @@
     (declare (inline calc-cost))
     (let ((fst (first prevs)))
       (setf (vn:prev vn) fst
-	    (vn:cost vn) (calc-cost fst vn))
-      
-      (dolist (p (cdr prevs))
-	(let ((cost (calc-cost p vn)))
-	  (when (< cost (vn:cost vn))
-	    (setf (vn:cost vn) cost
-		  (vn:prev vn) p))))
-      
-      (incf (vn:cost vn) (dic:word-cost (vn:word-id vn) wdc))
-      vn)))
+	    (vn:cost vn) (calc-cost fst vn)))
+
+    (dolist (p (cdr prevs))
+      (let ((cost (calc-cost p vn)))
+	(when (< cost (vn:cost vn))
+	  (setf (vn:cost vn) cost
+		(vn:prev vn) p))))
+
+    (incf (vn:cost vn) (dic:word-cost (vn:word-id vn) wdc))
+    vn))
 
 (defun parse-impl (tagger cs len)
   (declare (fixnum len))
   (let ((nodes (make-sequence 'simple-vector (1+ len) :initial-element nil))
 	(wdc   (tagger-wdc tagger))
 	(unk   (tagger-unk tagger))
-	(mtx   (tagger-mtx tagger))
-	(per-rlt (make-array 16 :fill-pointer 0 :adjustable t :element-type 'vn::viterbi-node)))
+	(mtx   (tagger-mtx tagger)))
     (setf (aref nodes 0) +BOS-NODES+)
 
     (loop FOR i FROM 0 BELOW len 
 	  FOR prevs = (aref nodes i) DO
       (setf (code-stream:position cs) i)
-      (setf (fill-pointer per-rlt) 0)
       (when prevs
 	(dolist (vn (unk:search cs unk wdc (dic:search cs '() wdc)))
 	  (if (vn:space? vn)
@@ -71,9 +69,10 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; external function
 (defun load-tagger (data-dir &optional (feature-parser #'identity))
-  (make-tagger :wdc (dic:load data-dir feature-parser)
-	       :unk (unk:load data-dir)
-	       :mtx (mtx:load data-dir)))
+  (prog1 (make-tagger :wdc (dic:load data-dir feature-parser)
+		      :unk (unk:load data-dir)
+		      :mtx (mtx:load data-dir))
+    #+SBCL (sb-ext:gc :full t)))
 
 (defun parse (tagger text &aux rlt)
   (let ((wdc  (tagger-wdc tagger))
