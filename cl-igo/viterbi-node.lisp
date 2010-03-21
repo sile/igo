@@ -1,7 +1,8 @@
 (defpackage igo.viterbi-node
   (:use :common-lisp)
-  (:export new
-	   new-bos/eos
+  (:nicknames :vn)
+  (:export make
+	   make-bos/eos
 	   cost
 	   prev
 	   word-id
@@ -12,7 +13,13 @@
 	   space?))
 (in-package :igo.viterbi-node)
 
-(defstruct (viterbi-node (:constructor new (word-id start end left-id right-id space?))
+;;;;;;;;;;;
+;;; declaim
+(declaim (inline new-bos/eos)) 
+
+;;;;;;;;;;
+;;; struct
+(defstruct (viterbi-node (:constructor make (word-id start end left-id right-id space?))
 			 (:conc-name ""))
   (cost 0     :type fixnum)
   (prev nil   :type (or null viterbi-node))
@@ -23,5 +30,6 @@
   (end 0      :type fixnum)
   (space? nil :type boolean))
 
-(defun new-bos/eos () 
-  (new 0 0 0 0 0 nil))
+;;;;;;;;;;;;;;;;;;;;;
+;;; external function
+(defun make-bos/eos () (make 0 0 0 0 0 nil))

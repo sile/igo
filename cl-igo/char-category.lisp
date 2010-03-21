@@ -3,6 +3,7 @@
   (:shadow load)
   (:export load
 	   category
+	   category-set
 	   compatible?
 	   category-trie-id
 	   category-length
@@ -10,8 +11,12 @@
 	   category-group?))
 (in-package :igo.char-category)
 
-(igo::set-package-nickname :igo.varied-byte-stream :vbs)
+;;;;;;;;;;;
+;;; declaim
+(declaim (inline category compatible?))
 
+;;;;;;;;;;
+;;; struct
 (defstruct category
   (trie-id 0   :type fixnum)
   (length  0   :type fixnum)
@@ -23,6 +28,8 @@
   (char->id  #() :type (simple-array (signed-byte 32)))
   (eql-masks #() :type (simple-array (signed-byte 32))))
 
+;;;;;;;;;;;;;;;;;;;;;
+;;; internal function
 (defun load-categorys (root-dir)
   (vbs:with-input-file (in (merge-pathnames "char.category" root-dir))
     (let ((data (vbs:read-sequence in 4 (/ (vbs:file-size in) 4))))
@@ -34,6 +41,8 @@
 			:group?  (= 1 (aref data (+ i 3)))))
        'vector))))
 
+;;;;;;;;;;;;;;;;;;;;;
+;;; external-function
 (defun load (root-dir)
   (vbs:with-input-file (in (merge-pathnames "code2category" root-dir))
     (make-category-set 
@@ -41,12 +50,9 @@
      :char->id  (vbs:read-sequence in 4 (/ (vbs:file-size in) 4 2))
      :eql-masks (vbs:read-sequence in 4 (/ (vbs:file-size in) 4 2)))))
 
-(defun category (code category-set)
-  (with-slots (categorys char->id) category-set
-    (aref categorys (aref char->id code))))
+(defun category (code cset)
+  (aref (categorys cset) (aref (char->id cset) code)))
 
-(defun compatible? (code1 code2 category-set)
-  (with-slots (eql-masks) category-set
-    (logtest (aref eql-masks code1) (aref eql-masks code2))))
-
-(igo::delete-package-nickname :igo.varied-byte-stream)
+(defun compatible? (code1 code2 cset)
+  (let ((eqls (eql-masks cset)))
+    (logtest (aref eqls code1) (aref eqls code2))))

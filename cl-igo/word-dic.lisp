@@ -1,51 +1,69 @@
 (defpackage igo.word-dic
   (:use :common-lisp)
+  (:nicknames :dic)
   (:shadow load
 	   search)
   (:export load
 	   *ipadic-feature-parser*
 	   word-dic
 	   word-data
-	   cost
+	   word-cost
 	   search
 	   search-from-trie-id))
 (in-package :igo.word-dic)
 
-(igo::set-package-nickname :igo.varied-byte-stream :vbs)
-(igo::set-package-nickname :igo.trie               :trie)
-(igo::set-package-nickname :igo.code-stream        :code-stream)
-(igo::set-package-nickname :igo.viterbi-node       :viterbi-node)
+;;;;;;;;;;;
+;;; declaim
+(declaim (inline word-data word-cost left-id right-id))
 
+;;;;;;;;;;
+;;; struct
 (defstruct word-dic
   (trie         nil :type trie:trie)
   (costs        #() :type (simple-array (signed-byte 16)))
   (left-ids     #() :type (simple-array (signed-byte 16)))
   (right-ids    #() :type (simple-array (signed-byte 16)))
-  (data         #() :type simple-array) ;; XXX: surrogate? and TODO: features
+  (data         #() :type (simple-array t))
   (indices      #() :type (simple-array (signed-byte 32))))
 
+;;;;;;;;;;;;;;;;;;;;
+;;; special variable
+(defvar *ipadic-feature-parser*
+  (lambda (feature)
+    (declare #.igo::*optimize-fastest*
+	     (simple-string feature))
+    (flet ((kw (s) (intern s :keyword))
+	   (kw-if-* (s) (if (string= s "*") (intern s :keyword) s)))
+      (let ((fs (the list (igo::split "," feature))))
+	(nconc (mapcar #'kw      (subseq fs 0 6))
+	       (mapcar #'kw-if-* (subseq fs 6)))))))
+
+;;;;;;;;;;;;;;;;;;;;;
+;;; internal function
 (defun read-indices (path)
   (vbs:with-input-file (in path)
     (vbs:read-sequence in 4 (/ (vbs:file-size in) 4))))
 
 (defun read-data (path)
+  ;; TODO: check surrogate pair
   (vbs:with-input-file (in path)
     (map 'string #'code-char (vbs:read-sequence in 2 (/ (vbs:file-size in) 2) :signed nil))))
 
 (defun split-data (data offsets feature-parser)
+  (declare #.igo::*optimize-fastest*
+	   ((simple-array (signed-byte 32)) offsets)
+	   (simple-string data)
+	   (function feature-parser))
   (let ((ary (make-array (1- (length offsets))))) 
     (dotimes (i (length ary) ary)
       (setf (aref ary i)
 	    (funcall feature-parser (subseq data (aref offsets i) (aref offsets (1+ i))))))))
 
-(defvar *ipadic-feature-parser*
-  (lambda (feature)
-    (flet ((kw (s) (intern s :keyword))
-	   (kw-if-* (s) (if (string= s "*") (intern s :keyword) s)))
-      (let ((fs (igo::split-by-chars "," feature)))
-	(nconc (mapcar #'kw      (subseq fs 0 6))
-	       (mapcar #'kw-if-* (subseq fs 6)))))))
- 
+(defun left-id (word-id wdic) (aref (word-dic-left-ids wdic) word-id))
+(defun right-id (word-id wdic) (aref (word-dic-right-ids wdic) word-id))
+
+;;;;;;;;;;;;;;;;;;;;;
+;;; external function 
 (defun load (root-dir &optional (feature-parser #'identity))
   (flet ((fullpath (name) (merge-pathnames root-dir name)))
     (vbs:with-input-file (in (fullpath "word.inf"))
@@ -61,33 +79,25 @@
 	 :right-ids    (vbs:read-sequence in 2 word-count)
 	 :costs        (vbs:read-sequence in 2 word-count))))))
 
-(defun cost (word-id wdic) (aref (word-dic-costs wdic) word-id))
-(defun left-id (word-id wdic) (aref (word-dic-left-ids wdic) word-id))
-(defun right-id (word-id wdic) (aref (word-dic-right-ids wdic) word-id))
-
 (defun search (cs result wdic)
+  (declare #.igo::*optimize-fastest*)
   (let ((start   (code-stream:position cs))
-	(indices (word-dic-indices wdic)))
-    (trie:each-common-prefix
-     (lambda (end id)
-       (loop FOR i FROM (aref indices id) BELOW (aref indices (1+ id)) DO
-         (push (viterbi-node:new i start end (left-id i wdic) (right-id i wdic) nil)
+	(indices (word-dic-indices wdic))
+	(trie (word-dic-trie wdic)))
+    (trie:each-common-prefix (end id cs trie)
+       (loop FOR i fixnum FROM (aref indices id) BELOW (aref indices (1+ id)) DO
+         (push (vn:make i start end (left-id i wdic) (right-id i wdic) nil)
 	       result)))
-     cs
-     (word-dic-trie wdic)))
+    (setf (code-stream:position cs) start))
   result)
 
 (defun search-from-trie-id (id start end space? result wdic)
+  (declare #.igo::*optimize-fastest*)
   (let ((indices (word-dic-indices wdic)))
-    (loop FOR i FROM (aref indices id) BELOW (aref indices (1+ id)) DO
-      (push (viterbi-node:new i start end (left-id i wdic) (right-id i wdic) space?)
+    (loop FOR i fixnum FROM (aref indices id) BELOW (aref indices (1+ id)) DO
+      (push (vn:make i start end (left-id i wdic) (right-id i wdic) space?)
 	    result)))
   result)
 
-(defun word-data (word-id wdic)
-  (aref (word-dic-data wdic) word-id))
-
-(igo::delete-package-nickname :igo.varied-byte-stream)
-(igo::delete-package-nickname :igo.trie)
-(igo::delete-package-nickname :igo.code-stream)
-(igo::delete-package-nickname :igo.viterbi-node)
+(defun word-cost (word-id wdic) (aref (word-dic-costs wdic) word-id))
+(defun word-data (word-id wdic) (aref (word-dic-data wdic)  word-id))

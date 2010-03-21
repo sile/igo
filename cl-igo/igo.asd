@@ -8,6 +8,7 @@
 
   :serial t
   :components ((:file "package")
+	       (:file "type")
 	       (:file "util")
 	       (:file "varied-byte-stream")
 	       (:file "code-stream")
@@ -18,4 +19,5 @@
 	       (:file "word-dic")
 	       (:file "unknown")
 	       (:file "morpheme")
-	       (:file "tagger")))
+	       (:file "tagger")
+	       (:file "delete-nicknames")))

@@ -1,5 +1,6 @@
 (defpackage igo.varied-byte-stream
-  (:use :common-lisp)
+  (:use :common-lisp :igo.type)
+  (:nicknames :vbs)
   (:shadow read-byte
 	   read-sequence)
   (:export with-input-file
@@ -8,13 +9,14 @@
 	   file-size))
 (in-package :igo.varied-byte-stream)
 
-(deftype n-byte (byte-size signed?)
-  `(,(if signed? 'signed-byte 'unsigned-byte) ,(* byte-size 8)))
-
+;;;;;;;;;;
+;;; struct
 (defstruct varied-byte-stream 
   (source nil :type file-stream)
   (offset 0   :type fixnum))
 
+;;;;;;;;;;;;;;;;;;;;;
+;;; external function
 (defmacro with-input-file ((stream filespec) &body body)
   `(with-open-file (,stream ,filespec)
      (let ((,stream (make-varied-byte-stream :source ,stream)))
