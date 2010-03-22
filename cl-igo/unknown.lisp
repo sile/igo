@@ -43,15 +43,13 @@
 	  (go :end)))
       
       (when (and (category-group? ct))
-	(loop 
-	 (when (code-stream:end? cs)
-	   (return))
-	 (unless (compatible? code (code-stream:read cs) categorys)
-	   (code-stream:unread cs)
-	   (return)))
+	(loop (when (code-stream:end? cs)
+		(return))
+	      (unless (compatible? code (code-stream:read cs) categorys)
+		(code-stream:unread cs)
+		(return)))
 	(setf result 
-	      (dic:search-from-trie-id trie-id start 
-				       (code-stream:position cs)
+	      (dic:search-from-trie-id trie-id start (code-stream:position cs)
 				       space? result wdic))))
     :end
     (setf (code-stream:position cs) start))

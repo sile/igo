@@ -66,7 +66,7 @@
 	   s
 	 (copy-seq s))))
 
-(defmacro parse-and-map-result ((viterbi-node text tagger) &body body)
+(defmacro parse-then-map-result ((viterbi-node text tagger) &body body)
   (let ((result (gensym)))
     `(let ((,text (coerce-to-simple-string ,text))
 	   (,result '()))
@@ -84,11 +84,11 @@
     #+SBCL (sb-ext:gc :full t)))
 
 (defun parse (tagger text &aux (wdc (tagger-wdc tagger)))
-  (parse-and-map-result (vn text tagger)
+  (parse-then-map-result (vn text tagger)
     (list (subseq text (vn:start vn) (vn:end vn))
 	  (dic:word-data (vn:word-id vn) wdc)
 	  (vn:start vn))))
 
 (defun wakati (tagger text)
-  (parse-and-map-result (vn text tagger)
+  (parse-then-map-result (vn text tagger)
     (subseq text (vn:start vn) (vn:end vn))))
