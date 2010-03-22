@@ -29,28 +29,27 @@
 	  (code      (code-stream:read cs))
 	  (categorys (categorys unk))
 	  (ct        (category code categorys)))
-    (when (and result (not (category-invoke? ct)))
+    (when (and result (not (category-invoke? ct))) ; invoke
       (go :end))
 
     (let* ((trie-id (category-trie-id ct))
 	   (space?  (= trie-id (space-id unk)))
 	   (limit   (category-length ct)))
-      (loop FOR len FROM 1 TO limit DO
+      (loop FOR len FROM 1 TO limit DO             ; length
         (setf result 
-	      (dic:search-from-trie-id trie-id start (code-stream:position cs) space? result wdic))
+          (dic:search-from-trie-id trie-id start (code-stream:position cs) space? result wdic))
 	(when (or (code-stream:end? cs)
 		  (not (compatible? code (code-stream:read cs) categorys)))
 	  (go :end)))
       
-      (when (and (category-group? ct))
+      (when (and (category-group? ct))             ; group
 	(loop (when (code-stream:end? cs)
 		(return))
 	      (unless (compatible? code (code-stream:read cs) categorys)
 		(code-stream:unread cs)
 		(return)))
 	(setf result 
-	      (dic:search-from-trie-id trie-id start (code-stream:position cs)
-				       space? result wdic))))
+	  (dic:search-from-trie-id trie-id start (code-stream:position cs) space? result wdic))))
     :end
     (setf (code-stream:position cs) start))
   result)

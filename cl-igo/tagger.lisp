@@ -11,6 +11,8 @@
   (wdc nil :type dic:word-dic)
   (unk nil :type unk:unknown)
   (mtx nil :type mtx:matrix))
+(defmethod print-object ((o tagger) stream)
+  (print-unreadable-object (o stream :type t :identity t)))
 
 ;;;;;;;;;;;;
 ;;; constant
@@ -78,10 +80,9 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; external function
 (defun load-tagger (data-dir &optional (feature-parser #'identity))
-  (prog1 (make-tagger :wdc (dic:load data-dir feature-parser)
-		      :unk (unk:load data-dir)
-		      :mtx (mtx:load data-dir))
-    #+SBCL (sb-ext:gc :full t)))
+  (make-tagger :wdc (dic:load data-dir feature-parser)
+	       :unk (unk:load data-dir)
+	       :mtx (mtx:load data-dir)))
 
 (defun parse (tagger text &aux (wdc (tagger-wdc tagger)))
   (parse-then-map-result (vn text tagger)

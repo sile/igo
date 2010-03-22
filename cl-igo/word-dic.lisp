@@ -13,7 +13,8 @@
 
 ;;;;;;;;;;;
 ;;; declaim
-(declaim (inline word-data word-cost left-id right-id))
+(declaim (inline word-data word-cost left-id right-id 
+		 high-surrogate-code? surrogate-char-code))
 
 ;;;;;;;;;;
 ;;; struct
@@ -31,10 +32,22 @@
   (vbs:with-input-file (in path)
     (vbs:read-sequence in 4 (/ (vbs:file-size in) 4))))
 
+(defun high-surrogate-code? (code) (<= #xD800 code #xDBFF))
+(defun surrogate-code-char (high low)
+  (code-char (+ (ash (+ (- high #xB800) #b1000000) 10)
+		(- low #xDC00))))
+
 (defun read-data (path)
-  ;; TODO: check surrogate pair
   (vbs:with-input-file (in path)
-    (map 'string #'code-char (vbs:read-sequence in 2 (/ (vbs:file-size in) 2) :signed nil))))
+    (let* ((raw (vbs:read-sequence in 2 (/ (vbs:file-size in) 2) :signed nil))
+	   (buf (make-array (length raw) :element-type 'character :fill-pointer 0))
+	   (high-sgt nil))
+      ;; TODO: invalid surrogate code pair check
+      (loop FOR code ACROSS raw DO
+        (cond ((high-surrogate-code? code) (setf high-sgt code))
+	      (high-sgt (vector-push (surrogate-code-char high-sgt code) buf))
+	      (t        (vector-push (code-char code)                    buf))))
+      (copy-seq buf))))
 
 (defun split-data (data offsets feature-parser)
   (declare #.igo::*optimize-fastest*

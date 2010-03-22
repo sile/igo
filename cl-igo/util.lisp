@@ -1,11 +1,8 @@
 (in-package :igo)
 
 (defmacro delete-package-nickname (package) 
-  (declare (ignore package)))
-#|
   `(eval-when (:compile-toplevel :load-toplevel :execute)
      (rename-package ,package ,package)))
-|#
 
 (defmacro defconst-once-only (name value &optional documentation)
   `(unless (boundp ',name)

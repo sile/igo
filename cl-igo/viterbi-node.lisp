@@ -1,16 +1,8 @@
 (defpackage igo.viterbi-node
   (:use :common-lisp)
   (:nicknames :vn)
-  (:export make
-	   make-bos/eos
-	   cost
-	   prev
-	   word-id
-	   left-id
-	   right-id
-	   start
-	   end
-	   space?))
+  (:export make make-bos/eos
+	   cost prev word-id left-id right-id start end space?))
 (in-package :igo.viterbi-node)
 
 ;;;;;;;;;;;

@@ -35,11 +35,6 @@
 (defun code (code-stream)
   (char-code (char (source code-stream) (position code-stream))))
 
-;;;;;;;;;;;;;;;;;;;;;
-;;; external function
-(defun end? (code-stream)
-  (= (position code-stream) (length (source code-stream))))
-
 (defun low-surrogate (code)
   (declare (character-code code))
   (+ #xDC00 (ldb (byte 10 0) code)))
@@ -47,6 +42,11 @@
 (defun high-surrogate (code)
   (declare (character-code code))
   (+ #xB800 (- (ldb (byte 11 10) code) #b1000000)))
+
+;;;;;;;;;;;;;;;;;;;;;
+;;; external function
+(defun end? (code-stream)
+  (= (position code-stream) (length (source code-stream))))
 
 (defun read (code-stream)
   (declare (code-stream code-stream))
