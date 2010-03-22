@@ -20,9 +20,10 @@
 ;;;;;;;;;;
 ;;; struct
 (defstruct (viterbi-node (:constructor make (word-id start end left-id right-id space?))
-			 (:conc-name ""))
+			 (:conc-name "")
+			 (:type vector))
   (cost 0     :type fixnum)
-  (prev nil   :type (or null viterbi-node))
+  (prev nil   :type t)
   (left-id 0  :type fixnum)
   (right-id 0 :type fixnum)
   (word-id 0  :type fixnum)

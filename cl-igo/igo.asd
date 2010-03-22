@@ -18,6 +18,5 @@
 	       (:file "viterbi-node")
 	       (:file "word-dic")
 	       (:file "unknown")
-	       (:file "morpheme")
 	       (:file "tagger")
 	       (:file "delete-nicknames")))

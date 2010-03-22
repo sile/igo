@@ -1,12 +1,6 @@
 (defpackage igo
   (:use :common-lisp)
-  (:export morpheme
-	   morpheme-surface
-	   morpheme-feature
-	   morpheme-start
-	   
-	   *ipadic-feature-parser*
-
+  (:export *ipadic-feature-parser*
 	   load-tagger
 	   parse
 	   wakati))

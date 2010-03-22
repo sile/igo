@@ -22,20 +22,20 @@
 (defmacro nconcf (lst1 lst2)
   `(setf ,lst1 (nconc ,lst1 ,lst2)))
 
-(defun set-mincost-node (vn prevs mtx wdc)
-  (flet ((calc-cost (prev cur)
-           (+ (vn:cost prev) 
-	      (mtx:link-cost (vn:right-id prev) (vn:left-id cur) mtx))))
+(defun set-mincost-node (vn prevs mtx wdc &aux (left-id (vn:left-id vn)))
+  (flet ((calc-cost (prev)
+           (+ (vn:cost prev) (mtx:link-cost (vn:right-id prev) left-id mtx))))
     (declare (inline calc-cost))
+
     (let ((fst (first prevs)))
       (setf (vn:prev vn) fst
-	    (vn:cost vn) (calc-cost fst vn)))
+	    (vn:cost vn) (calc-cost fst)))
 
     (dolist (p (cdr prevs))
-      (let ((cost (calc-cost p vn)))
+      (let ((cost (calc-cost p)))
 	(when (< cost (vn:cost vn))
-	  (setf (vn:cost vn) cost
-		(vn:prev vn) p))))
+	  (setf (vn:prev vn) p
+		(vn:cost vn) cost))))
 
     (incf (vn:cost vn) (dic:word-cost (vn:word-id vn) wdc))
     vn))
@@ -66,6 +66,15 @@
 	   s
 	 (copy-seq s))))
 
+(defmacro parse-and-map-result ((viterbi-node text tagger) &body body)
+  (let ((result (gensym)))
+    `(let ((,text (coerce-to-simple-string ,text))
+	   (,result '()))
+       (do ((,viterbi-node (parse-impl ,tagger (code-stream:make ,text 0) (length ,text))
+			   (vn:prev ,viterbi-node)))
+	   ((null (vn:prev ,viterbi-node)) ,result)
+         (push (progn ,@body) ,result)))))
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; external function
 (defun load-tagger (data-dir &optional (feature-parser #'identity))
@@ -74,20 +83,12 @@
 		      :mtx (mtx:load data-dir))
     #+SBCL (sb-ext:gc :full t)))
 
-(defun parse (tagger text &aux rlt)
-  (let ((wdc  (tagger-wdc tagger))
-	(text (coerce-to-simple-string text)))
-    (do ((vn (parse-impl tagger (code-stream:make text 0) (length text))
-	     (vn:prev vn)))
-	((null (vn:prev vn)) rlt)
-      (push (igo::make-morpheme (subseq text (vn:start vn) (vn:end vn))
-				(dic:word-data (vn:word-id vn) wdc)
-				(vn:start vn))
-	    rlt))))
+(defun parse (tagger text &aux (wdc (tagger-wdc tagger)))
+  (parse-and-map-result (vn text tagger)
+    (list (subseq text (vn:start vn) (vn:end vn))
+	  (dic:word-data (vn:word-id vn) wdc)
+	  (vn:start vn))))
 
-(defun wakati (tagger text &aux rlt)
-  (let ((text (coerce-to-simple-string text)))
-    (do ((vn (parse-impl tagger (code-stream:make text 0) (length text))
-	     (vn:prev vn)))
-	((null (vn:prev vn)) rlt)
-      (push (subseq text (vn:start vn) (vn:end vn)) rlt))))
+(defun wakati (tagger text)
+  (parse-and-map-result (vn text tagger)
+    (subseq text (vn:start vn) (vn:end vn))))
