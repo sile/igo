@@ -39,25 +39,28 @@
 
 (defun read-data (path)
   (vbs:with-input-file (in path)
-    (let* ((raw (vbs:read-sequence in 2 (/ (vbs:file-size in) 2) :signed nil))
-	   (buf (make-array (length raw) :element-type 'character :fill-pointer 0))
-	   (high-sgt nil))
-      ;; TODO: invalid surrogate code pair check
-      (loop FOR code ACROSS raw DO
-        (cond ((high-surrogate-code? code) (setf high-sgt code))
-	      (high-sgt (vector-push (surrogate-code-char high-sgt code) buf))
-	      (t        (vector-push (code-char code)                    buf))))
-      (copy-seq buf))))
+    (vbs:read-sequence in 2 (/ (vbs:file-size in) 2) :signed nil)))
+
+(defun data->string (data)
+  (let* ((buf (make-array (length data) :element-type 'character :fill-pointer 0))
+	 (high-sgt nil))
+    ;; TODO: invalid surrogate code pair check
+    (loop FOR code ACROSS data DO
+      (cond ((high-surrogate-code? code) (setf high-sgt code))
+	    (high-sgt (vector-push (surrogate-code-char high-sgt code) buf))
+	    (t        (vector-push (code-char code)                    buf))))
+    (copy-seq buf)))
 
 (defun split-data (data offsets feature-parser)
   (declare #.igo::*optimize-fastest*
 	   ((simple-array (signed-byte 32)) offsets)
-	   (simple-string data)
+	   ((simple-array (unsigned-byte 16)) data)
 	   (function feature-parser))
   (let ((ary (make-array (1- (length offsets))))) 
     (dotimes (i (length ary) ary)
       (setf (aref ary i)
-	    (funcall feature-parser (subseq data (aref offsets i) (aref offsets (1+ i))))))))
+	    (funcall feature-parser 
+		     (data->string (subseq data (aref offsets i) (aref offsets (1+ i)))))))))
 
 (defun left-id (word-id wdic) (aref (word-dic-left-ids wdic) word-id))
 (defun right-id (word-id wdic) (aref (word-dic-right-ids wdic) word-id))
@@ -68,7 +71,7 @@
   (flet ((fullpath (name) (merge-pathnames root-dir name)))
     (vbs:with-input-file (in (fullpath "word.inf"))
       (let* ((word-count (/ (vbs:file-size in) (+ 4 2 2 2)))
-	     (data    (read-data    (fullpath "word.dat")))
+	     (data    (read-data (fullpath "word.dat")))
 	     (offsets (vbs:read-sequence in 4 word-count)))
 	(make-word-dic
 	 :trie    (trie:load    (fullpath "word2id"))
