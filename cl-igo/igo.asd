@@ -2,7 +2,7 @@
 
 (defsystem igo
   :name    "igo"
-  :version "0.1.0"
+  :version "0.2.0"
   :author  "Takeru Ohta"
   :description "Common Lisp morpheme analyzer"
 

@@ -1,10 +1,13 @@
 (defpackage igo
   (:use :common-lisp)
   (:export *ipadic-feature-parser*
+	   *tagger*
 	   load-tagger
 	   parse
 	   wakati))
 (in-package :igo)
+
+(defvar *tagger*)
 
 (eval-when (:compile-toplevel :load-toplevel)
  (defvar *optimize-fastest* '(optimize (speed 3) (debug 0) (safety 0) (compilation-speed 0))))

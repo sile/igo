@@ -80,16 +80,16 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; external function
 (defun load-tagger (data-dir &optional (feature-parser #'identity))
-  (make-tagger :wdc (dic:load data-dir feature-parser)
-	       :unk (unk:load data-dir)
-	       :mtx (mtx:load data-dir)))
+  (setf *tagger* (make-tagger :wdc (dic:load data-dir feature-parser)
+			      :unk (unk:load data-dir)
+			      :mtx (mtx:load data-dir))))
 
-(defun parse (tagger text &aux (wdc (tagger-wdc tagger)))
+(defun parse (text &optional (tagger *tagger*) &aux (wdc (tagger-wdc tagger)))
   (parse-then-map-result (vn text tagger)
     (list (subseq text (vn:start vn) (vn:end vn))
 	  (dic:word-data (vn:word-id vn) wdc)
 	  (vn:start vn))))
 
-(defun wakati (tagger text)
+(defun wakati (text &optional (tagger *tagger*))
   (parse-then-map-result (vn text tagger)
     (subseq text (vn:start vn) (vn:end vn))))
