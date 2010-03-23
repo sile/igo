@@ -72,6 +72,7 @@
   (let ((result (gensym)))
     `(let ((,text (coerce-to-simple-string ,text))
 	   (,result '()))
+       (check-type ,tagger tagger)
        (do ((,viterbi-node (parse-impl ,tagger (code-stream:make ,text 0) (length ,text))
 			   (vn:prev ,viterbi-node)))
 	   ((null (vn:prev ,viterbi-node)) ,result)
