@@ -94,11 +94,11 @@ public final class Tagger {
 	    nodesAry.add(new ArrayList<ViterbiNode>());
 	
 	for(int i=0; i < len; i++, perResult.clear()) {
-	    if(nodesAry.get(i).isEmpty()==false) {
+	    final ArrayList<ViterbiNode> prevs = nodesAry.get(i);
+	    if(prevs.isEmpty()==false) {
 		wdc.search(text, i, perResult);       // 単語辞書から形態素を検索
 		unk.search(text, i, wdc, perResult);  // 未知語辞書から形態素を検索
 
-		final ArrayList<ViterbiNode> prevs = nodesAry.get(i);
 		for(int j=0; j < perResult.size(); j++) {
                     final ViterbiNode vn = perResult.get(j);
 		    if(vn.isSpace)
