@@ -16,12 +16,12 @@
 			 (:type vector))
   (cost 0     :type fixnum)
   (prev nil   :type t)
-  (left-id 0  :type fixnum)
-  (right-id 0 :type fixnum)
-  (word-id 0  :type fixnum)
-  (start 0    :type fixnum)
-  (end 0      :type fixnum)
-  (space? nil :type boolean))
+  (left-id 0  :type fixnum :read-only t)
+  (right-id 0 :type fixnum :read-only t)
+  (word-id 0  :type fixnum :read-only t)
+  (start 0    :type fixnum :read-only t)
+  (end 0      :type fixnum :read-only t)
+  (space? nil :type boolean :read-only t))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; external function

@@ -14,12 +14,12 @@
 ;;;;;;;;;;
 ;;; struct
 (defstruct (trie (:conc-name ""))
-  (element-count 0 :type fixnum)
-  (begs #()        :type (simple-array (signed-byte 32)))
-  (lens #()        :type (simple-array (signed-byte 16)))
-  (base #()        :type (simple-array (signed-byte 32)))
-  (chck #()        :type (simple-array (unsigned-byte 16)))
-  (tail #()        :type (simple-array (unsigned-byte 16))))
+  (element-count 0 :type fixnum :read-only t)
+  (begs #()        :type (simple-array (signed-byte 32)) :read-only t)
+  (lens #()        :type (simple-array (signed-byte 16)) :read-only t)
+  (base #()        :type (simple-array (signed-byte 32)) :read-only t)
+  (chck #()        :type (simple-array (unsigned-byte 16)) :read-only t)
+  (tail #()        :type (simple-array (unsigned-byte 16)) :read-only t))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; internal function

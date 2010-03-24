@@ -8,9 +8,9 @@
 ;;;;;;;;;;
 ;;; struct 
 (defstruct tagger
-  (wdc nil :type dic:word-dic)
-  (unk nil :type unk:unknown)
-  (mtx nil :type mtx:matrix))
+  (wdc nil :type dic:word-dic :read-only t)
+  (unk nil :type unk:unknown  :read-only t)
+  (mtx nil :type mtx:matrix   :read-only t))
 (defmethod print-object ((o tagger) stream)
   (print-unreadable-object (o stream :type t :identity t)))
 

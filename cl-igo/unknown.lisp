@@ -11,17 +11,15 @@
 ;;;;;;;;;;
 ;;; struct
 (defstruct (unknown (:conc-name ""))
-  (categorys nil :type category-set)
-  (space-id  0   :type fixnum))
+  (categorys nil :type category-set :read-only t)
+  (space-id  0   :type fixnum :read-only t))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; external function
 (defun load (root-dir)
-  (let* ((cts (igo.char-category:load root-dir))
-	 (unk (make-unknown :categorys cts)))
-    (setf (space-id unk) 
-	  (category-trie-id (category (char-code #\Space) cts)))
-    unk))
+  (let ((cts (igo.char-category:load root-dir)))
+    (make-unknown :categorys cts 
+		  :space-id (category-trie-id (category (char-code #\Space) cts)))))
 
 (defun search (cs unk wdic result)
   (declare #.igo::*optimize-fastest*)

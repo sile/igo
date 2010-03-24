@@ -18,15 +18,15 @@
 ;;;;;;;;;;
 ;;; struct
 (defstruct category
-  (trie-id 0   :type fixnum)
-  (length  0   :type fixnum)
-  (invoke? nil :type boolean)
-  (group?  nil :type boolean))
+  (trie-id 0   :type fixnum :read-only t)
+  (length  0   :type fixnum :read-only t)
+  (invoke? nil :type boolean :read-only t)
+  (group?  nil :type boolean :read-only t))
   
 (defstruct (category-set (:conc-name ""))
-  (categorys #() :type (simple-array category))
-  (char->id  #() :type (simple-array (signed-byte 32)))
-  (eql-masks #() :type (simple-array (signed-byte 32))))
+  (categorys #() :type (simple-array category) :read-only t)
+  (char->id  #() :type (simple-array (signed-byte 32)) :read-only t)
+  (eql-masks #() :type (simple-array (signed-byte 32)) :read-only t))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; internal function

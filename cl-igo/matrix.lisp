@@ -14,9 +14,9 @@
 ;;;;;;;;
 ;;; struct
 (defstruct (matrix (:conc-name ""))
-  (matrix   #() :type (simple-array (signed-byte 16)))
-  (left-size  0 :type (unsigned-byte 16))
-  (right-size 0 :type (unsigned-byte 16)))
+  (matrix   #() :type (simple-array (signed-byte 16)) :read-only t)
+  (left-size  0 :type (unsigned-byte 16) :read-only t)
+  (right-size 0 :type (unsigned-byte 16) :read-only t))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; external function 

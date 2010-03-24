@@ -8,6 +8,3 @@
 (delete-package-nickname :igo.viterbi-node)
 (delete-package-nickname :igo.word-dic)
 (delete-package-nickname :igo.unknown)
-
-
-

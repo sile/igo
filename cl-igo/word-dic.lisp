@@ -19,12 +19,12 @@
 ;;;;;;;;;;
 ;;; struct
 (defstruct word-dic
-  (trie         nil :type trie:trie)
-  (costs        #() :type (simple-array (signed-byte 16)))
-  (left-ids     #() :type (simple-array (signed-byte 16)))
-  (right-ids    #() :type (simple-array (signed-byte 16)))
-  (data         #() :type (simple-array t))
-  (indices      #() :type (simple-array (signed-byte 32))))
+  (trie         nil :type trie:trie :read-only t)
+  (costs        #() :type (simple-array (signed-byte 16)) :read-only t)
+  (left-ids     #() :type (simple-array (signed-byte 16)) :read-only t)
+  (right-ids    #() :type (simple-array (signed-byte 16)) :read-only t)
+  (data         #() :type (simple-array t) :read-only t)
+  (indices      #() :type (simple-array (signed-byte 32)) :read-only t))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; internal function

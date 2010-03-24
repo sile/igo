@@ -21,7 +21,7 @@
 ;;; struct
 (defstruct (code-stream (:constructor make (source start &aux (position start)))
 			(:conc-name ""))
-  (source    ""   :type simple-string)
+  (source    ""   :type simple-string :read-only t)
   (position   0   :type array-index)
   (surrogate? nil :type boolean))
 
