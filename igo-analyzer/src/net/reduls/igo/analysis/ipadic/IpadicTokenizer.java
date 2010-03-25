@@ -80,10 +80,7 @@ public final class IpadicTokenizer extends Tokenizer {
 	final int p7=m.feature.indexOf(",",p6+1);
 
 	// 品詞設定
-	if(p6 != -1)
-	    typeAtt.setType(m.feature.substring(0,p6));  // 原形部分までの品詞情報をセットする
-	else
-	    typeAtt.setType(m.feature);                  // 原形以降はもともと存在しないので、そのままセットする
+	typeAtt.setType(m.feature.substring(0,p6));  // 原形部分までの品詞情報をセットする
 
 	// ターム設定
 	if(p7 != -1)
