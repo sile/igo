@@ -3,9 +3,9 @@ package net.reduls.igo.bin;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import net.reduls.igo.dictionary.Matrix;
+import net.reduls.igo.dictionary.build.Matrix;
 import net.reduls.igo.dictionary.build.WordDic;
-import net.reduls.igo.dictionary.CharCategory;
+import net.reduls.igo.dictionary.build.CharCategory;
 
 /**
  * テキスト辞書からバイナリ辞書を作成するコマンド
@@ -24,6 +24,7 @@ public final class BuildDic {
 	new File(outputDir).mkdirs();
 
 	final WordDic wd = new WordDic(inputDir, encoding, outputDir, delim);
+	final CharCategory cc = new CharCategory(inputDir, encoding, outputDir);
 	try {
 	    System.err.println("### Build word trie");
 	    wd.buildWordIdMap();
@@ -35,7 +36,7 @@ public final class BuildDic {
 	    Matrix.build(inputDir, outputDir);
 	    
 	    System.err.println("### Build char-category dictionary");
-	    CharCategory.build(inputDir, outputDir, encoding);
+	    cc.build();
 	    
 	    System.err.println("DONE");
 	} catch (ParseException e) {

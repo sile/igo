@@ -17,7 +17,7 @@ public final class Searcher {
     /**
      * 保存されているDoubleArrayを読み込んで、このクラスのインスタンスを作成する
      *
-     * @params filepath DoubleArrayが保存されているファイルのパス
+     * @param filepath DoubleArrayが保存されているファイルのパス
      * @throws IOException filepathで示されるファイルの読み込みに失敗した場合に送出される
      */
     public Searcher(String filepath) throws IOException {
@@ -46,7 +46,7 @@ public final class Searcher {
     /**
      * キーを検索する
      *
-     * @params key 検索対象のキー文字列
+     * @param key 検索対象のキー文字列
      * @return キーが見つかった場合はそのIDを、見つからなかった場合は-1を返す
      */
     public int search(CharSequence key) {
@@ -71,9 +71,9 @@ public final class Searcher {
 	/**
 	 * eachCommonPrefixメソッドで該当するキーの部分文字列が見つかった都度に呼び出されるメソッド
 	 *
-	 * @params start 入力テキストの検索開始位置
-	 * @params offset 一致した部分文字列の終端位置
-	 * @params id 一致した部分文字列のID
+	 * @param start 入力テキストの検索開始位置
+	 * @param offset 一致した部分文字列の終端位置
+	 * @param id 一致した部分文字列のID
 	 */
 	public void call(int start, int offset, int id);
     }
@@ -82,9 +82,9 @@ public final class Searcher {
      * common-prefix検索を行う
      * 条件に一致するキーが見つかる度に、fn.call(...)メソッドが呼び出される
      *
-     * @params key 検索対象のキー文字列
-     * @params start 検索対象となるキー文字列の最初の添字
-     * @params fn 一致を検出した場合に呼び出されるメソッドを定義したコールバッククラス
+     * @param key 検索対象のキー文字列
+     * @param start 検索対象となるキー文字列の最初の添字
+     * @param fn 一致を検出した場合に呼び出されるメソッドを定義したコールバッククラス
      */
     public void eachCommonPrefix(CharSequence key, int start, Callback fn) {
 	int node = base[0];

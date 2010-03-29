@@ -25,8 +25,8 @@ public class ReadLine {
     /**
      * ファイルを元に、このクラスのインスタンスを作成する
      *
-     * @params filepath 読み込むファイルのパス
-     * @params encoding 読み込むファイルのエンコーディング
+     * @param filepath 読み込むファイルのパス
+     * @param encoding 読み込むファイルのエンコーディング
      * @throws IOException 入出力エラーが発生した場合に送出される
      */
     public ReadLine(String filepath, String encoding) throws IOException {

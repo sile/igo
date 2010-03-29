@@ -7,8 +7,8 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
 /**
- * ファイルにマッピングされた入力ストリーム
- * net.reduls.igo以下のパッケージではファイルからバイナリデータを取得する場合、必ずこのクラスを使うようになっている
+ * ファイルにマッピングされた入力ストリーム<br />
+ * net.reduls.igo以下のパッケージではファイルからバイナリデータを取得する場合、必ずこのクラスが使用される
  */
 public final class FileMappedInputStream {
     private final FileChannel cnl;
@@ -17,7 +17,7 @@ public final class FileMappedInputStream {
     /**
      * 入力ストリームを作成する
      * 
-     * @params filepath マッピングするファイルのパス
+     * @param filepath マッピングするファイルのパス
      */
     public FileMappedInputStream(String filepath) throws IOException {
 	cnl = new FileInputStream(filepath).getChannel();

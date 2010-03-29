@@ -8,8 +8,8 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
 /**
- * ファイルにマッピングされた出力ストリーム
- * net.reduls.igo以下のパッケージではファイルにバイナリデータを出力する場合、必ずこのクラスを使うようになっている
+ * ファイルにマッピングされた出力ストリーム<br />
+ * net.reduls.igo以下のパッケージではファイルにバイナリデータを出力する場合、必ずこのクラスが使用される
  */
 public final class FileMappedOutputStream {
     private final MappedByteBuffer mbb;
@@ -17,8 +17,8 @@ public final class FileMappedOutputStream {
     /**
      * サイズを指定して出力ストリームを作成する
      *
-     * @params filepath マッピングされるファイルのパス
-     * @params size ファイル(=出力するデータ)のサイズ。このサイズを超えて出力が行われた場合の動作は未定義。
+     * @param filepath マッピングされるファイルのパス
+     * @param size ファイル(=出力するデータ)のサイズ。このサイズを超えて出力が行われた場合の動作は未定義。
      */
     public FileMappedOutputStream(String filepath, int size) throws IOException {
 	new File(filepath).delete();

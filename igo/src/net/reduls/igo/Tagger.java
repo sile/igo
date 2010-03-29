@@ -23,9 +23,9 @@ public final class Tagger {
     private final Matrix  mtx;
    
     /**
-     * バイナリ辞書をもとに、この形態素解析器のインスタンスを作成する
+     * バイナリ辞書を読み込んで、形態素解析器のインスタンスを作成する
      *
-     * @params バイナリ辞書があるディレクトリ
+     * @param dataDir バイナリ辞書があるディレクトリ
      * @throws FileNotFoundException 間違ったディレクトリが指定された場合に送出される
      * @throws IOException その他の入出力エラーが発生した場合に送出される
      */
@@ -38,7 +38,7 @@ public final class Tagger {
     /**
      * 形態素解析を行う
      *
-     * @params text 解析対象テキスト
+     * @param text 解析対象テキスト
      * @return 解析結果の形態素のリスト
      */
     public List<Morpheme> parse(CharSequence text) {
@@ -48,8 +48,8 @@ public final class Tagger {
     /**
      * 形態素解析を行う
      *
-     * @params text 解析対象テキスト
-     * @params result 解析結果の形態素が追加されるリスト
+     * @param text 解析対象テキスト
+     * @param result 解析結果の形態素が追加されるリスト
      * @return 解析結果の形態素リスト. {@code parse(text,result)=result}
      */
     public List<Morpheme> parse(CharSequence text, List<Morpheme> result) {
@@ -64,7 +64,7 @@ public final class Tagger {
     /**
      * 分かち書きを行う
      *
-     * @params text 分かち書きされるテキスト
+     * @param text 分かち書きされるテキスト
      * @return 分かち書きされた文字列のリスト
      */
     public List<String> wakati(CharSequence text) {
@@ -74,8 +74,8 @@ public final class Tagger {
     /**
      * 分かち書きを行う
      *
-     * @params text 分かち書きされるテキスト
-     * @params result 分かち書き結果の文字列が追加されるリスト
+     * @param text 分かち書きされるテキスト
+     * @param result 分かち書き結果の文字列が追加されるリスト
      * @return 分かち書きされた文字列のリスト. {@code wakati(text,result)=result}
      */
     public List<String> wakati(CharSequence text, List<String> result) {

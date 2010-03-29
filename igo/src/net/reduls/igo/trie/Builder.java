@@ -30,7 +30,7 @@ public final class Builder {
     /**
      * キー文字列のリストから、DoubleArrayを構築する
      *
-     * @params keyList DoubleArrayのキーとなる文字列のリスト. 破壊的に更新される
+     * @param keyList DoubleArrayのキーとなる文字列のリスト. 破壊的に更新される
      * @return 構築済みDoubleArrayを有するBuilderインスタンス
      */
     public static Builder build(List<String> keyList) {
@@ -42,7 +42,7 @@ public final class Builder {
     /**
      * 構築したDoubleArrayをファイルに保存する
      *
-     * @params filepath DoubleArrayを保存するファイルのパス
+     * @param filepath DoubleArrayを保存するファイルのパス
      * @throws IOException filepathで示されたファイルへの書き込みに失敗した場合に送出される
      */ 
     public void save (String filepath) throws IOException {

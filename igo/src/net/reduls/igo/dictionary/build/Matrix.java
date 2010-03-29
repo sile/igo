@@ -1,43 +1,20 @@
-package net.reduls.igo.dictionary;
+package net.reduls.igo.dictionary.build;
 
 import java.io.IOException;
 import java.io.EOFException;
 import java.text.ParseException;
 import net.reduls.igo.util.ReadLine;
-import net.reduls.igo.util.FileMappedInputStream;
 import net.reduls.igo.util.FileMappedOutputStream;
 
 /**
- * 形態素の連接コスト表を扱うクラス
+ * 形態素の連接コスト表のバイナリデータを作成するためのクラス
  */
 public final class Matrix {
-    private final int     leftSize;
-    private final int     rightSize;
-    private final short[] matrix;
-
-    public Matrix(String dataDir) throws IOException {
-	final FileMappedInputStream fmis = new FileMappedInputStream(dataDir+"/matrix.bin");
-	try {
-	    leftSize = fmis.getInt();
-	    rightSize= fmis.getInt();
-	    matrix   = fmis.getShortArray(leftSize*rightSize);
-	} finally {
-	    fmis.close();
-	}
-    }
-
-    /**
-     * 形態素同士の連接コストを求める
-     */
-    public short linkCost(int leftId, int rightId) {
-	return matrix[rightId*rightSize + leftId];
-    }
-    
     /**
      * 連接コスト表のバイナリデータを作成する
      *
-     * @params inputDir ソース辞書があるディレクトリ。{@code inputDir+"/matrix.def"}ファイルが使用される
-     * @params outputDir バイナリデータが保存されるディレクトリ。{@code outputDir+"/matrix.bin"}ファイルが作成される
+     * @param inputDir ソース辞書があるディレクトリ。{@code inputDir+"/matrix.def"}ファイルが使用される
+     * @param outputDir バイナリデータが保存されるディレクトリ。{@code outputDir+"/matrix.bin"}ファイルが作成される
      * @throws ParseException 入力ファイルのパースに失敗した場合に送出される
      * @throws IOException 入出力エラーが発生した場合に送出される
      */

@@ -21,12 +21,12 @@ public final class WordDic {
     private final String delim;
 
     /**
-     * バイナリ単語辞書ビルダインスタンスを作成する
+     * コンストラクタ
      *
-     * @params inputDir テキスト単語辞書が配置されているディレクトリのパス
-     * @params encoding テキスト単語辞書の文字列エンコーディング
-     * @params outputDir バイナリ単語辞書の保存先ディレクトリ
-     * @params delim 単語辞書内の各項目の区切り文字
+     * @param inputDir テキスト単語辞書が配置されているディレクトリのパス
+     * @param encoding テキスト単語辞書の文字列エンコーディング
+     * @param outputDir バイナリ単語辞書の保存先ディレクトリ
+     * @param delim 単語辞書内の各項目の区切り文字
      */
     public WordDic(String inputDir, String encoding, String outputDir, String delim) {
 	this.inputDir =inputDir;
@@ -59,7 +59,7 @@ public final class WordDic {
 	final ReadLine rl = new ReadLine(path,encoding);
 	try {
 	    for(String line=rl.read(); line!=null; line=rl.read()) {
-		final String key = line.substring(0, line.indexOf(delim));
+		final String key = line.substring(0, line.indexOf(delim,1));
 		keyList.add(prefix+key);
 	    }
 	} catch (IndexOutOfBoundsException e) {
@@ -161,7 +161,7 @@ public final class WordDic {
 	final ReadLine rl = new ReadLine(path, encoding);
 	try {
 	    for(String s=rl.read(); s!=null; s=rl.read()) {
-		final int p1 = s.indexOf(delim);       // key
+		final int p1 = s.indexOf(delim,1);     // key
 		final int p2 = s.indexOf(delim,p1+1);  // left id
 		final int p3 = s.indexOf(delim,p2+1);  // right id
 		final int p4 = s.indexOf(delim,p3+1);  // cost
