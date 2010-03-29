@@ -7,10 +7,47 @@
   <body>
     <h1>Igo - Java形態素解析器 (ver 0.4.2)</h1>
     <hr />
+
+    <div class="toc">
+      <h3>目次</h3>
+      <ul>
+	<li>概要/特徴</li>
+	<li>インストール/使い方</li>
+	<ul>
+	  <li>jarファイル</li>
+	  <li>解析用辞書作成</li>
+	  <li>形態素解析</li>
+	</ul>
+	<li>コマンド</li>
+	<ul>
+	  <li>BuildDic</li>
+	  <li>Igo</li>
+	</ul>
+	<li>Java API</li>
+	<ul>
+	  <li>Tagger</li>
+	  <li>Morpheme</li>
+	  <li>サンプルコード</li>
+	</ul>
+	<li>MeCabとの相違点</li>
+	<ul>
+	  <li>解析結果</li>
+	  <li>機能</li>
+	  <li>辞書ファイル</li>
+	  <li>単語エントリフォーマット</li>
+	  <li>未知語</li>
+	</ul>
+	<li>制限/注意点</li>
+	<ul>
+	  <li>禁則文字</li>
+	  <li>バイナリ辞書エンディアン</li>
+	</ul>
+	<li>ライセンス</li>
+	<li>バグ報告など</li>
+      </ul>
+    </div>
     
-    <h2>目次</h2>
-    <hr />
-    
+    <div class="content">
     <h2>概要/特徴</h2>
     <ul>
       <li>Javaで実装された形態素解析器。→ <a href="#">Common Lisp版はこちらを参照</a></li>
@@ -19,9 +56,8 @@
       <li>Javaの形態素解析器としては比較的高速。</li>
       <li>スレッドセーフ。</li>
     </ul>
-    <hr />
 
-    <h2>インストール方法/使い方</h2>
+    <h2>インストール/使い方</h2>
     <h3>1) jarファイルの取得/作成</h3>
     - <a href="http://sourceforge.jp/projects/igo/releases/">ダウンロード画面</a>より<b>igo-0.4.2.jar</b>ファイルをダウンロードする。
     <br />
@@ -29,49 +65,48 @@
     <br />
     ※ ソースコードのビルドには、<a href="http://ant.apache.org/">Apache Ant</a>が必要。
     <pre>
- $ tar zxvf igo-0.4.2-src.tar.gz  <span class="comment"># ソース解凍</span>
- $ cd igo-0.4.2-src               <span class="comment"># ディレクトリ移動</span>
- $ ant                            <span class="comment"># ビルド & jarファイル作成</span></pre> 
+$ tar zxvf igo-0.4.2-src.tar.gz  <span class="comment"># ソース解凍</span>
+$ cd igo-0.4.2-src               <span class="comment"># ディレクトリ移動</span>
+$ ant                            <span class="comment"># ビルド & jarファイル作成</span></pre> 
 
     <h3>2) 解析用辞書作成</h3>
     Igoプロジェクト自体は形態素解析用の辞書は提供せず、<a href="http://mecab.sourceforge.net/">MeCab</a>プロジェクトが配布している(もしくはそれと互換性のある)辞書を使用することを想定。
     <br />
     以下では、MeCabのサイトより、現時点(2010/03/29)で最新のIPA辞書をダウンロードした場合の手順を記す。
     <pre>
- <span class="comment"># IPA辞書解凍</span>
- $ tar mecab-ipadic-2.7.0-20070801.tar.gz  
+<span class="comment"># IPA辞書解凍</span>
+$ tar mecab-ipadic-2.7.0-20070801.tar.gz  
 
- <span class="comment"># 解析用バイナリ辞書の作成</span>
- $ java -cp igo-0.4.2.jar net.reduls.igo.bin.BuildDic ipadic mecab-ipadic-2.7.0-20070801 EUC-JP</pre>
+<span class="comment"># 解析用バイナリ辞書の作成</span>
+$ java -cp igo-0.4.2.jar net.reduls.igo.bin.BuildDic ipadic mecab-ipadic-2.7.0-20070801 EUC-JP</pre>
     ※ 失敗する場合は、こっちを参照
 
     <h3>3) 形態素解析</h3>
     <pre>
- <span class="comment"># 形態素解析</span>
- $ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo ipadic 
- すもももももももものうち <b><i>[Enter]</i></b>  
+<span class="comment"># 形態素解析</span>
+$ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo ipadic 
+すもももももももものうち <b><i>[Enter]</i></b>  
 
- すもも	名詞,一般,*,*,*,*,すもも,スモモ,スモモ
- も	助詞,係助詞,*,*,*,*,も,モ,モ
- もも	名詞,一般,*,*,*,*,もも,モモ,モモ
- も	助詞,係助詞,*,*,*,*,も,モ,モ
- もも	名詞,一般,*,*,*,*,もも,モモ,モモ
- の	助詞,連体化,*,*,*,*,の,ノ,ノ
- うち	名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ
- EOS
+すもも	名詞,一般,*,*,*,*,すもも,スモモ,スモモ
+も	助詞,係助詞,*,*,*,*,も,モ,モ
+もも	名詞,一般,*,*,*,*,もも,モモ,モモ
+も	助詞,係助詞,*,*,*,*,も,モ,モ
+もも	名詞,一般,*,*,*,*,もも,モモ,モモ
+の	助詞,連体化,*,*,*,*,の,ノ,ノ
+うち	名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ
+EOS
 
- <span class="comment"># 分かち書き</span>
- $ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo -wakati ipadic 
- すもももももももものうち <b><i>[Enter]</i></b>
+<span class="comment"># 分かち書き</span>
+$ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo -wakati ipadic 
+すもももももももものうち <b><i>[Enter]</i></b>
   
- すもも も もも も もも の うち</pre>
-    <hr />
+すもも も もも も もも の うち</pre>
     
     <h2>コマンド</h2>
     <h3>・BuildDicコマンド</h3>
     - バイナリ辞書を作成するためのコマンド
     <pre>
- $ java -cp igo-0.4.2.jar net.reduls.igo.bin.BuildDic
+$ java -cp igo-0.4.2.jar net.reduls.igo.bin.BuildDic
 Usage: java net.reduls.igo.bin.BuildDic <i>&lt;output directory&gt; &lt;input directory&gt; &lt;encoding&gt; [delimiter]</i>
 <span class="comment">
 #########
@@ -84,7 +119,7 @@ Usage: java net.reduls.igo.bin.BuildDic <i>&lt;output directory&gt; &lt;input di
     <h3>・Igoコマンド</h3>
     - 標準入力から読み込んだテキストに対して形態素解析を行うコマンド
     <pre>
- $ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo
+$ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo
 Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
 <span class="comment">
 #########
@@ -166,7 +201,7 @@ Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
  *    (surface.lengthを積算していくだけではズレが生じる可能性がある)
  */</span></pre>
 
-    <h3>・使用例</h3>
+    <h3>・サンプルコード</h3>
 <pre>
 <span class="keyword">import</span> java.io.BufferedReader;
 <span class="keyword">import</span> java.io.InputStreamReader;
@@ -176,6 +211,8 @@ Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
 
 <span class="comment">/**
  * 標準入力からテキストを読み込んで、形態素解析結果を標準出力に出力する
+ *  - コンパイル: javac -cp igo-0.4.2.jar Sample.java
+ *  - 実行: java -cp igo-0.4.2.jar:. Sample &lt;バイナリ辞書ディレクトリ&gt;
  */</span>
 <span class="keyword">public class</span> <span class="class">Sample</span> {
    <span class="keyword"> public static</span> <span class="class">void</span> main(<span class="class">String</span>[] args) <span class="keyword">throws</span> <span class="class">IOException</span> {
@@ -188,17 +225,54 @@ Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
 
         <span class="keyword">for</span>(<span class="class">String</span> line=br.readLine(); line!=null; line=br.readLine())
             <span class="keyword">for</span>(<span class="class">Morpheme</span> m : tagger.parse(line))
-                <span class="class">System</span>.out.println(m.surface+"\t"+m.feature);
+                <span class="class">System</span>.out.println(m.surface+<span class="string">"\t"</span>+m.feature);
     }
 }
 </pre>
-    <hr />
     
     <h2>MeCabとの相違点</h2>
-    - 解析結果
-    - 機能
-    - 辞書構築時に使用するファイル
-    - 未知語
+    <h3>解析結果</h3>
+    Igoの形態素解析結果は、基本的にMeCabのそれに合わせるようになっている。<br />
+    ただし、ソースコードは全く別物なので、両者の結果が等しくなる保証はない。<br />
+    <br />
+    特に、未知語の扱いに関しては、MeCabのドキュメントだけでは詳細が不明な箇所があるため、結果に差異が生じている可能性がある。<br />
+    <br />
+    以下は、IgoとMeCabで解析結果が異なる既知の例。
+    <br />
+    <pre>
+<span class="comment">#####
+# 一定以上連続した記号(未知語)を入力として渡した場合、両者で結果が異なる
+#
+# 解析に使用した辞書は、mecab-ipadic-2.7.0-20070801
+
+###
+# MeCab - 0.97
+# 一定数以上、未知語(SYMBOL)が連接すると途中から一文字ごとに区切られるようになる</span>
+$ mecab
+------------------------------ <b><i>[Enter]</i></b>
+
+-	名詞,サ変接続,*,*,*,*,*
+-	名詞,サ変接続,*,*,*,*,*
+-	名詞,サ変接続,*,*,*,*,*
+-	名詞,サ変接続,*,*,*,*,*
+-	名詞,サ変接続,*,*,*,*,*
+-------------------------	名詞,サ変接続,*,*,*,*,*
+EOS
+
+<span class="comment">###
+# Igo - 0.4.2
+# 連接する未知語(SYMBOL)は一つの形態素となる</span>
+$ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo /var/igo/dic/ipa/
+------------------------------ <b><i>[Enter]</i></b>
+
+------------------------------	名詞,サ変接続,*,*,*,*,*
+EOS</pre>
+    <h3>機能</h3>
+    Igoは、MeCabとは異なり基本的な形態素解析機能しか提供しない。
+    <h3>使用する辞書ファイル</h3>
+    <br />
+    その他、単語辞書に関しては...を参照。
+    <h3>未知語</h3>
     <hr />
     
     <h2>制限/注意点</h2>
@@ -213,5 +287,6 @@ Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
     Igoで使用する辞書のライセンスは、配布元のそれに準じます。
     <hr />
     <h2>バグ報告など</h2>
+    </div>
   </body>
 </html>

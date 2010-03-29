@@ -1,11 +1,18 @@
+.content h2 {
+ background-color: #FFFFAA;
+}
 
-h2 {
+h3 {
  text-decoration: underline;
 }
 
 pre {
  background-color:#F0F0F0;
  border:1px solid #CCCCCC;
+ margin-left: 5px;
+ margin-right: 20px;
+ padding-left: 3px;
+ font-size: small;
 }
 
 pre .comment {
@@ -22,3 +29,32 @@ pre .class {
  color: green;
  font-weight: bold;
 }
+
+pre .string {
+ color: #BC8F8F;
+}
+
+div.content {
+ float: left;
+ width: 730px;
+ margin-left: 5px;
+ margin-right: 5px;
+}
+
+div.toc{
+ float: left;
+ width: 150px;
+ font-size: small;
+}
+
+div.toc ul {
+ margin-left: 1em;
+ padding-left: 0px;
+}
+
+div.toc ul > ul {
+ font-size: x-small;
+ margin-left: 1em;
+ padding-left: 0px;
+}
+
