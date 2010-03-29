@@ -44,7 +44,7 @@
 
 (defun parse-impl (tagger cs len)
   (declare (fixnum len))
-  (let ((nodes (make-sequence 'simple-vector (1+ len) :initial-element nil))
+  (let ((nodes (make-array (1+ len) :initial-element nil))
 	(wdc   (tagger-wdc tagger))
 	(unk   (tagger-unk tagger))
 	(mtx   (tagger-mtx tagger)))
