@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import net.reduls.igo.dictionary.Matrix;
-import net.reduls.igo.dictionary.WordDic;
+import net.reduls.igo.dictionary.build.WordDic;
 import net.reduls.igo.dictionary.CharCategory;
 
 /**
@@ -12,22 +12,24 @@ import net.reduls.igo.dictionary.CharCategory;
  */
 public final class BuildDic {
     public static void main(String[] args) {
-	if(args.length != 3) {
-	    System.err.println("Usage: java net.reduls.igo.bin.BuildDic <output directory> <input directory> <encoding>");
+	if(args.length != 3 && args.length != 4) {
+	    System.err.println("Usage: java net.reduls.igo.bin.BuildDic <output directory> <input directory> <encoding> [delimiter]");
 	    System.exit(1);
 	}
 	final String outputDir = args[0];
 	final String inputDir  = args[1];
 	final String encoding  = args[2];
+	final String delim = args.length==4 ? args[3] : ",";
 
 	new File(outputDir).mkdirs();
 
+	final WordDic wd = new WordDic(inputDir, encoding, outputDir, delim);
 	try {
 	    System.err.println("### Build word trie");
-	    WordDic.genWordIdMap(inputDir, outputDir, encoding);
+	    wd.buildWordIdMap();
 	    
 	    System.err.println("### Build word dictionary");
-	    WordDic.genWordInfo(inputDir, outputDir, encoding);
+	    wd.buildWordInfo();
 	    
 	    System.err.println("### Build matrix");
 	    Matrix.build(inputDir, outputDir);
