@@ -1,0 +1,217 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Igo - a morphological analyzer</title>
+    <link type="text/css" rel="stylesheet" href="igo.css" />
+  </head>
+  <body>
+    <h1>Igo - Java形態素解析器 (ver 0.4.2)</h1>
+    <hr />
+    
+    <h2>目次</h2>
+    <hr />
+    
+    <h2>概要/特徴</h2>
+    <ul>
+      <li>Javaで実装された形態素解析器。→ <a href="#">Common Lisp版はこちらを参照</a></li>
+      <li>辞書フォーマット及び解析結果は、ほぼ<a href="http://mecab.sourceforge.net/">MeCab</a>互換。</li>
+      <li>単機能。</li>
+      <li>Javaの形態素解析器としては比較的高速。</li>
+      <li>スレッドセーフ。</li>
+    </ul>
+    <hr />
+
+    <h2>インストール方法/使い方</h2>
+    <h3>1) jarファイルの取得/作成</h3>
+    - <a href="http://sourceforge.jp/projects/igo/releases/">ダウンロード画面</a>より<b>igo-0.4.2.jar</b>ファイルをダウンロードする。
+    <br />
+    - 上記リンク先よりダウンロードしたjarファイルが何らかの理由で使用できない場合は、同リンク先よりソースコード(<b>igo-0.4.2-src.tar.gz</b>)をダウンロードし、以下の手順に従ってjarファイルを作成する。
+    <br />
+    ※ ソースコードのビルドには、<a href="http://ant.apache.org/">Apache Ant</a>が必要。
+    <pre>
+ $ tar zxvf igo-0.4.2-src.tar.gz  <span class="comment"># ソース解凍</span>
+ $ cd igo-0.4.2-src               <span class="comment"># ディレクトリ移動</span>
+ $ ant                            <span class="comment"># ビルド & jarファイル作成</span></pre> 
+
+    <h3>2) 解析用辞書作成</h3>
+    Igoプロジェクト自体は形態素解析用の辞書は提供せず、<a href="http://mecab.sourceforge.net/">MeCab</a>プロジェクトが配布している(もしくはそれと互換性のある)辞書を使用することを想定。
+    <br />
+    以下では、MeCabのサイトより、現時点(2010/03/29)で最新のIPA辞書をダウンロードした場合の手順を記す。
+    <pre>
+ <span class="comment"># IPA辞書解凍</span>
+ $ tar mecab-ipadic-2.7.0-20070801.tar.gz  
+
+ <span class="comment"># 解析用バイナリ辞書の作成</span>
+ $ java -cp igo-0.4.2.jar net.reduls.igo.bin.BuildDic ipadic mecab-ipadic-2.7.0-20070801 EUC-JP</pre>
+    ※ 失敗する場合は、こっちを参照
+
+    <h3>3) 形態素解析</h3>
+    <pre>
+ <span class="comment"># 形態素解析</span>
+ $ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo ipadic 
+ すもももももももものうち <b><i>[Enter]</i></b>  
+
+ すもも	名詞,一般,*,*,*,*,すもも,スモモ,スモモ
+ も	助詞,係助詞,*,*,*,*,も,モ,モ
+ もも	名詞,一般,*,*,*,*,もも,モモ,モモ
+ も	助詞,係助詞,*,*,*,*,も,モ,モ
+ もも	名詞,一般,*,*,*,*,もも,モモ,モモ
+ の	助詞,連体化,*,*,*,*,の,ノ,ノ
+ うち	名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ
+ EOS
+
+ <span class="comment"># 分かち書き</span>
+ $ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo -wakati ipadic 
+ すもももももももものうち <b><i>[Enter]</i></b>
+  
+ すもも も もも も もも の うち</pre>
+    <hr />
+    
+    <h2>コマンド</h2>
+    <h3>・BuildDicコマンド</h3>
+    - バイナリ辞書を作成するためのコマンド
+    <pre>
+ $ java -cp igo-0.4.2.jar net.reduls.igo.bin.BuildDic
+Usage: java net.reduls.igo.bin.BuildDic <i>&lt;output directory&gt; &lt;input directory&gt; &lt;encoding&gt; [delimiter]</i>
+<span class="comment">
+#########
+# 【引数】
+# output directory: バイナリ辞書出力ディレクトリ
+# input directory: テキスト辞書が配置されているディレクトリ
+# encoding: テキスト辞書の文字エンコーディング
+# delimiter: 単語辞書(*.csv)の各項目の区切り文字(文字列). 省略された場合は","が使用される
+</span></pre>
+    <h3>・Igoコマンド</h3>
+    - 標準入力から読み込んだテキストに対して形態素解析を行うコマンド
+    <pre>
+ $ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo
+Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
+<span class="comment">
+#########
+# 【引数】
+# -wakati: この引数が指定された場合は、出力フォーマットが分かち書き形式となる
+# dictionary directory: バイナリ辞書が配置されているディレクトリ
+</span></pre>
+
+    <!-- Java API -->
+    <h2>Java API</h2>
+    Javaから形態素解析を行うために必要なクラスは以下の二つ。
+    <br />
+    <b>Taggerクラス</b>
+    <pre>
+<span class="keyword">package</span> net.reduls.igo;
+
+<span class="comment">/**
+ * 形態素解析クラス
+ *  - このクラスのインスタンスは不可変でありスレッドセーフ
+ */</span>
+<span class="keyword">public final class</span> <span class="class">Tagger</span> {
+   <span class="comment">/**
+    * 解析用辞書を読み込んで、形態素解析器インスタンスを作成する
+    * 
+    * @param dataDir バイナリ辞書があるディレクトリ
+    * @throws FileNotFoundException 間違ったディレクトリが指定された場合に送出される
+    * @throws IOException その他の入出力エラーが発生した場合に送出される
+    */</span>
+   <span class="keyword">public</span> <span class="class">Tagger</span>(<span class="class">String</span> dataDir) <span class="keyword">throws</span> <span class="class">FileNotFoundException</span>,<span class="class">IOException</span>;
+
+   <span class="comment">/**
+    * 形態素解析を行う
+    *
+    * @param text 解析対象テキスト
+    * @param result 解析結果の形態素が格納されるリスト. 末尾に追加される 
+    * @return 引数のresultオブジェクトが返される
+    */</span>
+   <span class="keyword">public</span> <span class="class">List</span><<span class="class">Morpheme</span>> parse(<span class="class">CharSequence</span> text, <span class="class">List</span><<span class="class">Morpheme</span>> result);
+   <span class="comment">/**
+    * 形態素解析を行う
+    *
+    * @param text 解析対象テキスト
+    * @return 解析結果の形態素が格納されているリスト
+    */</span>
+   <span class="keyword">public</span> <span class="class">List</span><<span class="class">Morpheme</span>> parse(<span class="class">CharSequence</span> text);
+
+   <span class="comment">/**
+    * 分かち書きを行う
+    *
+    * @param text 分かち書き対象テキスト
+    * @param result 分かち書きされた文字列が格納されるリスト. 末尾に追加される 
+    * @return 引数のresultオブジェクトが返される
+    */</span>
+   <span class="keyword">public</span> <span class="class">List</span>&lt;<span class="class">String</span>&gt; wakati(<span class="class">CharSequence</span> text, <span class="class">List</span>&lt;<span class="class">String</span>&gt; result);
+   <span class="comment">/**
+    * 分かち書きを行う
+    *
+    * @param text 分かち書き対象テキスト
+    * @return 分かち書きされた文字列が格納されているリスト 
+    */</span>
+   <span class="keyword">public</span> <span class="class">List</span>&lt;<span class="class">String</span>&gt; wakati(<span class="class">CharSequence</span> text);
+}</pre>
+<b>Morphemeクラス</b>
+<pre>
+<span class="keyword">package</span> net.reduls.igo;
+
+<span class="comment">/**
+ * 形態素クラス
+ *  - このクラスのインスタンスは不可変でありスレッドセーフ
+ */</span>
+<span class="keyword">public final class</span> <span class="class">Morpheme</span> {
+  <span class="keyword">public final</span> <span class="class">String</span> surface;  <span class="comment">// 形態素の表層形</span>
+  <span class="keyword">public final</span> <span class="class">String</span> feature;  <span class="comment">// 形態素の素性文字列</span>
+  <span class="keyword">public final</span> <span class="class">int</span>    start;    <span class="comment">// 入力テキスト内での形態素の出現開始位置 ※1</span>
+}
+<span class="comment">/**
+ * ※1 ' '(0x20)などの空白文字は、解析結果形態素列から除外されるため、
+ *    各形態素と入力テキストの対応を正確に取得するためには、このフィールドを用いる必要がある。
+ *    (surface.lengthを積算していくだけではズレが生じる可能性がある)
+ */</span></pre>
+
+    <h3>・使用例</h3>
+<pre>
+<span class="keyword">import</span> java.io.BufferedReader;
+<span class="keyword">import</span> java.io.InputStreamReader;
+<span class="keyword">import</span> java.io.IOException;
+<span class="keyword">import</span> net.reduls.igo.Tagger;
+<span class="keyword">import</span> net.reduls.igo.Morpheme;
+
+<span class="comment">/**
+ * 標準入力からテキストを読み込んで、形態素解析結果を標準出力に出力する
+ */</span>
+<span class="keyword">public class</span> <span class="class">Sample</span> {
+   <span class="keyword"> public static</span> <span class="class">void</span> main(<span class="class">String</span>[] args) <span class="keyword">throws</span> <span class="class">IOException</span> {
+        if(args.length != 1)
+            <span class="class">System</span>.exit(1);
+        
+        <span class="keyword">final</span> <span class="class">String</span> dicDir = args[0];
+        <span class="keyword">final</span> <span class="class">Tagger</span> tagger = <span class="keyword">new</span> <span class="class">Tagger</span>(dicDir);
+        <span class="keyword">final</span> <span class="class">BufferedReader</span> br = <span class="keyword">new</span> <span class="class">BufferedReader</span>(<span class="keyword">new</span> <span class="class">InputStreamReader</span>(<span class="class">System</span>.in));
+
+        <span class="keyword">for</span>(<span class="class">String</span> line=br.readLine(); line!=null; line=br.readLine())
+            <span class="keyword">for</span>(<span class="class">Morpheme</span> m : tagger.parse(line))
+                <span class="class">System</span>.out.println(m.surface+"\t"+m.feature);
+    }
+}
+</pre>
+    <hr />
+    
+    <h2>MeCabとの相違点</h2>
+    - 解析結果
+    - 機能
+    - 辞書構築時に使用するファイル
+    - 未知語
+    <hr />
+    
+    <h2>制限/注意点</h2>
+    - 禁則文字
+    - CSV
+    - エンディアン
+
+    <hr />
+    <h2>ライセンス</h2>
+    Igoのライセンスは、...です。
+    <br />
+    Igoで使用する辞書のライセンスは、配布元のそれに準じます。
+    <hr />
+    <h2>バグ報告など</h2>
+  </body>
+</html>

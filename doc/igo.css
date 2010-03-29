@@ -1,0 +1,24 @@
+
+h2 {
+ text-decoration: underline;
+}
+
+pre {
+ background-color:#F0F0F0;
+ border:1px solid #CCCCCC;
+}
+
+pre .comment {
+ color: #B22222;
+ font-style: italic;
+}
+
+pre .keyword {
+ color: #A020F0;
+ font-weight: bold;
+}
+
+pre .class {
+ color: green;
+ font-weight: bold;
+}
