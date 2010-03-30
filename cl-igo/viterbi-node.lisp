@@ -7,7 +7,7 @@
 
 ;;;;;;;;;;;
 ;;; declaim
-(declaim (inline new-bos/eos))
+(declaim (inline new-bos/eos make))
 
 ;;;;;;;;;;
 ;;; struct
