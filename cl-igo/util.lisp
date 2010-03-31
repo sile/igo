@@ -6,7 +6,7 @@
 
 (defmacro defconst-once-only (name value &optional documentation)
   `(unless (boundp ',name)
-     (defconstant ,name ,value ,@(when #1=documentation (list #1#))))
+     (defconstant ,name ,value ,@(when #1=documentation (list #1#)))))
 
 (defun split (delim seq &aux (len (length delim)))
   (when (zerop len)
