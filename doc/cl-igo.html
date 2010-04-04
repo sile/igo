@@ -1,0 +1,227 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Igo - a morphological analyzer</title>
+    <link type="text/css" rel="stylesheet" href="igo.css" />
+  </head>
+  <body>
+    <h1>cl-igo - Common Lisp形態素解析器 (ver 0.2.3)</h1>
+    <hr />
+
+    <div class="toc">
+      <h3>目次</h3>
+      <ul>
+	<li><a href="#feature">概要/特徴</a></li>
+	<li><a href="#common">Java版との共通部分</a></li>
+	<li><a href="#support">対応処理系</a></li>
+	<li><a href="#usage">インストール/使い方</a></li>
+	<ul>
+	  <li>解析用辞書作成</li>
+	  <li>インストール</li>
+	  <li>形態素解析</li>
+	</ul>
+	<li><a href="#api">API</a></li>
+	<ul>
+	  <li>Tagger</li>
+	  <li>Morpheme</li>
+	  <li>サンプルコード</li>
+	</ul>
+	<li><a href="#license">ライセンス</a></li>
+	<li><a href="#report">バグ報告など</a></li>
+      </ul>
+    </div>
+    
+    <div class="content">
+    <!-- 概要/特徴 -->
+    <h2 id="feature">概要/特徴</h2>
+    <ul>
+      <li>Common Lispで実装された形態素解析器。→ <a href="index.html">Java版</a></li>
+      <li>辞書フォーマット及び解析結果は、ほぼ<a href="http://mecab.sourceforge.net/">MeCab</a>互換。</li>
+      <li>単機能。</li>
+      <li>注意して扱えばスレッドセーフ。</li>
+    </ul>
+
+    <!-- Java版との共通部分 -->
+    <h2 id="common">Java版との共通部分</h2>
+    　以下の項目はJava版と共通のため、ドキュメントはリンク先のものを参照のこと。
+    <ul>
+      <li><a href="index.html#usage">バイナリ辞書構築方法</a></li>
+      <li><a href="index.html#mecab">MeCabとの相違点</a></li>
+      <li><a href="index.html#limit">制限/注意事項</a></li>
+    </ul>
+    
+    <!-- 対応処理系 -->
+    <h2 id="support">対応処理系</h2>
+    　ユニコードに対応しているCommon Lisp<span class="small">(ANSI X3.226-1994)</span>処理系なら動作するはず。<br />
+    　動作確認済みの処理系は以下の通り。
+    <ul>
+      <li>SBCL: 1.0.28〜1.0.37</li>
+      <li>CLISP: 2.42</li>
+      <li>ClozureCL: 1.4</li>
+    </ul>
+    <span class="note">※ なお、cl-igoはSBCLのver1.0.34以降に最適化されているため、他の処理系では十分な性能が出ない可能性がある。</span>
+
+    <!-- インストール/使い方 -->
+    <h2 id="usage">インストール/使い方</h2>
+    <h3>解析用辞書作成</h3>
+    　バイナリ辞書の作成方法は<a href="index.html#usage">Java版のドキュメント</a>を参照。
+
+    <h3>インストール</h3>
+    　インストールには、あらかじめ<a href="http://sourceforge.jp/projects/igo/releases/">リリース一覧画面</a>より<b>cl-igo-0.2.3.tar.gz</b>をダウンロードしておき、下記のlispコードを実行する。
+    <br />
+    <span class="note">※ <a href="http://www.cliki.net/asdf">asdf</a>及び<a href="http://www.cliki.net/ASDF-Install">asdf-install</a>パッケージが必要。</span>
+      <pre>
+(require :asdf)
+(require :asdf-install)
+
+<span class="comment">;; インストール</span>
+(asdf-install:install <span class="string">"cl-igo-0.2.3.tar.gz"</span>)
+
+<span class="comment">;; 一度インストールした後は、(require :igo)のようにしてパッケージをロードできる</span></pre>
+      　インストールはせずに一時的に使用したいだけの場合は、次のようにしてロードすることも可能。
+      <pre>
+(require :asdf)
+	
+<span class="comment">;; cl-igo-0.2.3.tar.gzは前もって解凍しておき、
+;; 解凍先ディレクトリをasdfのパッケージロード候補に追加する</span>
+(push #P<span class="string">"cl-igo-0.2.3.tar.gzの解凍ディレクトリ"</span> asdf:*central-registry*)
+
+<span class="comment">;; ロード</span>
+(asdf:operate 'asdf:load-op :igo)</pre>
+
+      <h3>形態素解析</h3>
+      <pre>
+(require :igo)
+
+<span class="comment">;; 辞書ロード</span>
+<span class="comment">;; ※ Common Lispでは、ディレクトリを指定する場合末尾の'/'が必須なので注意</span>
+(igo:load-tagger <span class="string">"/path/to/dicionary-directory/"</span>)
+
+<span class="comment">;; 形態素解析</span>
+(igo:parse <span class="string">"すもももももももものうち"</span>)
+<span class="comment">=> (("すもも" "名詞,一般,*,*,*,*,すもも,スモモ,スモモ" 0) ("も" "助詞,係助詞,*,*,*,*,も,モ,モ" 3)
+    ("もも" "名詞,一般,*,*,*,*,もも,モモ,モモ" 4) ("も" "助詞,係助詞,*,*,*,*,も,モ,モ" 6)
+    ("もも" "名詞,一般,*,*,*,*,もも,モモ,モモ" 7) ("の" "助詞,連体化,*,*,*,*,の,ノ,ノ" 9)
+    ("うち" "名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ" 10))</span>
+
+<span class="comment">;; 分かち書き</span>
+(igo:wakati <span class="string">"すもももももももものうち"</span>)
+<span class="comment">=> ("すもも" "も" "もも" "も" "もも" "の" "うち")</span></pre>
+    <!-- API -->
+    <h2 id="api">API</h2>
+    Javaから形態素解析を行うために必要なクラスは以下の二つ。
+
+    <h3>Taggerクラス</h3>
+    <pre>
+<span class="keyword">package</span> net.reduls.igo;
+
+<span class="comment">/**
+ * 形態素解析クラス
+ *  - このクラスのインスタンスは不可変でありスレッドセーフ
+ */</span>
+<span class="keyword">public final class</span> <span class="class">Tagger</span> {
+   <span class="comment">/**
+    * 解析用辞書を読み込んで、形態素解析器インスタンスを作成する
+    * 
+    * @param dataDir バイナリ辞書があるディレクトリ
+    * @throws FileNotFoundException 間違ったディレクトリが指定された場合に送出される
+    * @throws IOException その他の入出力エラーが発生した場合に送出される
+    */</span>
+   <span class="keyword">public</span> <span class="class">Tagger</span>(<span class="class">String</span> dataDir) <span class="keyword">throws</span> <span class="class">FileNotFoundException</span>,<span class="class">IOException</span>;
+
+   <span class="comment">/**
+    * 形態素解析を行う
+    *
+    * @param text 解析対象テキスト
+    * @param result 解析結果の形態素が格納されるリスト. 末尾に追加される 
+    * @return 引数のresultオブジェクトが返される
+    */</span>
+   <span class="keyword">public</span> <span class="class">List</span><<span class="class">Morpheme</span>> parse(<span class="class">CharSequence</span> text, <span class="class">List</span><<span class="class">Morpheme</span>> result);
+   <span class="comment">/**
+    * 形態素解析を行う
+    *
+    * @param text 解析対象テキスト
+    * @return 解析結果の形態素が格納されているリスト
+    */</span>
+   <span class="keyword">public</span> <span class="class">List</span><<span class="class">Morpheme</span>> parse(<span class="class">CharSequence</span> text);
+
+   <span class="comment">/**
+    * 分かち書きを行う
+    *
+    * @param text 分かち書き対象テキスト
+    * @param result 分かち書きされた文字列が格納されるリスト. 末尾に追加される 
+    * @return 引数のresultオブジェクトが返される
+    */</span>
+   <span class="keyword">public</span> <span class="class">List</span>&lt;<span class="class">String</span>&gt; wakati(<span class="class">CharSequence</span> text, <span class="class">List</span>&lt;<span class="class">String</span>&gt; result);
+   <span class="comment">/**
+    * 分かち書きを行う
+    *
+    * @param text 分かち書き対象テキスト
+    * @return 分かち書きされた文字列が格納されているリスト 
+    */</span>
+   <span class="keyword">public</span> <span class="class">List</span>&lt;<span class="class">String</span>&gt; wakati(<span class="class">CharSequence</span> text);
+}</pre>
+<h3>Morphemeクラス</h3>
+<pre>
+<span class="keyword">package</span> net.reduls.igo;
+
+<span class="comment">/**
+ * 形態素クラス
+ *  - このクラスのインスタンスは不可変でありスレッドセーフ
+ */</span>
+<span class="keyword">public final class</span> <span class="class">Morpheme</span> {
+  <span class="keyword">public final</span> <span class="class">String</span> surface;  <span class="comment">// 形態素の表層形</span>
+  <span class="keyword">public final</span> <span class="class">String</span> feature;  <span class="comment">// 形態素の素性文字列</span>
+  <span class="keyword">public final</span> <span class="class">int</span>    start;    <span class="comment">// 入力テキスト内での形態素の出現開始位置 ※1</span>
+}
+<span class="comment">/**
+ * ※1 ' '(0x20)などの空白文字は、解析結果形態素列から除外されるため、
+ *    各形態素と入力テキストの対応を正確に取得するためには、このフィールドを用いる必要がある。
+ *    (surface.lengthを積算していくだけではズレが生じる可能性がある)
+ */</span></pre>
+
+    <h3>サンプルコード</h3>
+<pre>
+<span class="keyword">import</span> java.io.BufferedReader;
+<span class="keyword">import</span> java.io.InputStreamReader;
+<span class="keyword">import</span> java.io.IOException;
+<span class="keyword">import</span> net.reduls.igo.Tagger;
+<span class="keyword">import</span> net.reduls.igo.Morpheme;
+
+<span class="comment">/**
+ * 標準入力からテキストを読み込んで、形態素解析結果を標準出力に出力する
+ *  - コンパイル: javac -cp igo-0.4.2.jar Sample.java
+ *  - 実行: java -cp igo-0.4.2.jar:. Sample &lt;バイナリ辞書ディレクトリ&gt;
+ */</span>
+<span class="keyword">public class</span> <span class="class">Sample</span> {
+   <span class="keyword"> public static</span> <span class="class">void</span> main(<span class="class">String</span>[] args) <span class="keyword">throws</span> <span class="class">IOException</span> {
+        if(args.length != 1)
+            <span class="class">System</span>.exit(1);
+        
+        <span class="keyword">final</span> <span class="class">String</span> dicDir = args[0];
+        <span class="keyword">final</span> <span class="class">Tagger</span> tagger = <span class="keyword">new</span> <span class="class">Tagger</span>(dicDir);
+        <span class="keyword">final</span> <span class="class">BufferedReader</span> br = <span class="keyword">new</span> <span class="class">BufferedReader</span>(<span class="keyword">new</span> <span class="class">InputStreamReader</span>(<span class="class">System</span>.in));
+
+        <span class="keyword">for</span>(<span class="class">String</span> line=br.readLine(); line!=null; line=br.readLine())
+            <span class="keyword">for</span>(<span class="class">Morpheme</span> m : tagger.parse(line))
+                <span class="class">System</span>.out.println(m.surface+<span class="string">"\t"</span>+m.feature);
+    }
+}
+</pre>
+
+    <!-- ライセンス -->
+    <h2 id="license">ライセンス</h2>
+    　MITライセンス。配布物のCOPYINGファイルを参照。
+    <br />
+    　ただし、使用する辞書のライセンスに関しては、辞書配布元のそれに準ずることとする。
+
+    <!-- バグ報告など -->
+    <h2 id="report">バグ報告など</h2>
+    　バグ報告、改善点指摘、要望、その他は、以下のいずれかからお願いします。
+    <ul>
+      <li><a href="http://sourceforge.jp/ticket/newticket.php?group_id=4980&display_mode=simple">SourceForgeチケット</a></li>
+      <li><a href="http://sourceforge.jp/users/phjgt/">開発者ページ</a>に記載されているメールアドレス</li>
+    </ul>
+    </div>
+  </body>
+</html>
