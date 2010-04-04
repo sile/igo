@@ -56,3 +56,22 @@ div.toc ul > ul {
  padding-left: 0px;
 }
 
+div.toc a {
+ text-decoration: none;
+}
+
+.small {
+ font-size: small;
+}
+
+.note {
+ color: #FF0000;
+ font-size: small;
+ margin-left: 15px;
+}
+
+thead {
+ background: lightgray;
+ text-align: center;
+ font-weight: bold;
+}

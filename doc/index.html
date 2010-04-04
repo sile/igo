@@ -11,74 +11,76 @@
     <div class="toc">
       <h3>目次</h3>
       <ul>
-	<li>概要/特徴</li>
-	<li>インストール/使い方</li>
+	<li><a href="#feature">概要/特徴</a></li>
+	<li><a href="#usage">インストール/使い方</a></li>
 	<ul>
 	  <li>jarファイル</li>
 	  <li>解析用辞書作成</li>
 	  <li>形態素解析</li>
 	</ul>
-	<li>コマンド</li>
+	<li><a href="#command">コマンド</a></li>
 	<ul>
 	  <li>BuildDic</li>
 	  <li>Igo</li>
 	</ul>
-	<li>Java API</li>
+	<li><a href="#api">Java API</a></li>
 	<ul>
 	  <li>Tagger</li>
 	  <li>Morpheme</li>
 	  <li>サンプルコード</li>
 	</ul>
-	<li>MeCabとの相違点</li>
+	<li><a href="#mecab">MeCabとの相違点</a></li>
 	<ul>
 	  <li>解析結果</li>
 	  <li>機能</li>
 	  <li>辞書ファイル</li>
 	  <li>単語エントリフォーマット</li>
 	</ul>
-	<li>制限/注意点</li>
+	<li><a href="#limit">制限/注意点</a></li>
 	<ul>
 	  <li>禁則文字</li>
 	  <li>バイナリ辞書エンディアン</li>
 	</ul>
-	<li>ライセンス</li>
-	<li>バグ報告など</li>
+	<li><a href="#license">ライセンス</a></li>
+	<li><a href="#report">バグ報告など</a></li>
       </ul>
     </div>
     
     <div class="content">
-    <h2>概要/特徴</h2>
+    <h2 id="feature">概要/特徴</h2>
     <ul>
-      <li>Javaで実装された形態素解析器。→ <a href="#">Common Lisp版はこちらを参照</a></li>
+      <li>Javaで実装された形態素解析器。→ <a href="cl-igo.html">Common Lisp版</a></li>
       <li>辞書フォーマット及び解析結果は、ほぼ<a href="http://mecab.sourceforge.net/">MeCab</a>互換。</li>
       <li>単機能。</li>
       <li>Javaの形態素解析器としては比較的高速。</li>
       <li>スレッドセーフ。</li>
     </ul>
 
-    <h2>インストール/使い方</h2>
+    <h2 id="usage">インストール/使い方</h2>
     <h3>1) jarファイルの取得/作成</h3>
-    - <a href="http://sourceforge.jp/projects/igo/releases/">ダウンロード画面</a>より<b>igo-0.4.2.jar</b>ファイルをダウンロードする。
-    <br />
-    - 上記リンク先よりダウンロードしたjarファイルが何らかの理由で使用できない場合は、同リンク先よりソースコード(<b>igo-0.4.2-src.tar.gz</b>)をダウンロードし、以下の手順に従ってjarファイルを作成する。
-    <br />
-    ※ ソースコードのビルドには、<a href="http://ant.apache.org/">Apache Ant</a>が必要。
+    　jarファイルは以下のいずれかの方法で取得/作成する。
+    <ol type="a">
+      <li><a href="http://sourceforge.jp/projects/igo/releases/">ダウンロード画面</a>より<b>igo-0.4.2.jar</b>をダウンロードする。</li>
+      <li>aのjarファイルが何らかの理由で使用できない場合は、同画面よりソースコード一式<span class="small">(<b>igo-0.4.2-src.tar.gz</b>)</span>を取得し、以下の手順に従ってjarファイルを作成する。
+	<br />
+	<span class="note">※ ソースコードのビルドには、<a href="http://ant.apache.org/">Apache Ant</a>が必要。</span></li>
+    </ol>
     <pre>
 $ tar zxvf igo-0.4.2-src.tar.gz  <span class="comment"># ソース解凍</span>
 $ cd igo-0.4.2-src               <span class="comment"># ディレクトリ移動</span>
 $ ant                            <span class="comment"># ビルド & jarファイル作成</span></pre> 
 
     <h3>2) 解析用辞書作成</h3>
-    Igoプロジェクト自体は形態素解析用の辞書は提供せず、<a href="http://mecab.sourceforge.net/">MeCab</a>プロジェクトが配布している(もしくはそれと互換性のある)辞書を使用することを想定。
+    　Igoプロジェクト自体は形態素解析用の辞書<span class="small">(テキスト辞書)</span>は提供せず、<a href="http://mecab.sourceforge.net/">MeCab</a>プロジェクトが配布している<span class="small">(もしくはそれと互換性のある)</span>辞書を使用することを想定している。
     <br />
-    以下では、MeCabのサイトより、現時点(2010/03/29)で最新のIPA辞書をダウンロードした場合の手順を記す。
+    　以下ではMeCabのサイトより、現時点<span class="small">(2010/04/04)</span>で最新のIPA辞書をダウンロードした場合の手順を記す。
     <pre>
 <span class="comment"># IPA辞書解凍</span>
 $ tar mecab-ipadic-2.7.0-20070801.tar.gz  
 
 <span class="comment"># 解析用バイナリ辞書の作成</span>
 $ java -cp igo-0.4.2.jar net.reduls.igo.bin.BuildDic ipadic mecab-ipadic-2.7.0-20070801 EUC-JP</pre>
-    ※ 失敗する場合は、こっちを参照
+    <span class="note">※ なおIgoのテキスト辞書の解釈の仕方は、若干だがMeCabのそれとは異なるところがある。詳しくは<a href="#mecab">こちら</a>を参照のこと。</span>
 
     <h3>3) 形態素解析</h3>
     <pre>
@@ -101,9 +103,10 @@ $ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo -wakati ipadic
   
 すもも も もも も もも の うち</pre>
     
-    <h2>コマンド</h2>
-    <h3>・BuildDicコマンド</h3>
-    - バイナリ辞書を作成するためのコマンド
+    <h2 id="command">コマンド</h2>
+    使用可能なコマンドの説明。
+    <h3>BuildDicコマンド</h3>
+    バイナリ辞書を作成するためのコマンド
     <pre>
 $ java -cp igo-0.4.2.jar net.reduls.igo.bin.BuildDic
 Usage: java net.reduls.igo.bin.BuildDic <i>&lt;output directory&gt; &lt;input directory&gt; &lt;encoding&gt; [delimiter]</i>
@@ -115,8 +118,8 @@ Usage: java net.reduls.igo.bin.BuildDic <i>&lt;output directory&gt; &lt;input di
 # encoding: テキスト辞書の文字エンコーディング
 # delimiter: 単語辞書(*.csv)の各項目の区切り文字(文字列). 省略された場合は","が使用される
 </span></pre>
-    <h3>・Igoコマンド</h3>
-    - 標準入力から読み込んだテキストに対して形態素解析を行うコマンド
+    <h3>Igoコマンド</h3>
+    標準入力から読み込んだテキストに対して形態素解析を行うコマンド
     <pre>
 $ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo
 Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
@@ -128,10 +131,10 @@ Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
 </span></pre>
 
     <!-- Java API -->
-    <h2>Java API</h2>
+    <h2 id="api">Java API</h2>
     Javaから形態素解析を行うために必要なクラスは以下の二つ。
-    <br />
-    <b>Taggerクラス</b>
+
+    <h3>Taggerクラス</h3>
     <pre>
 <span class="keyword">package</span> net.reduls.igo;
 
@@ -181,7 +184,7 @@ Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
     */</span>
    <span class="keyword">public</span> <span class="class">List</span>&lt;<span class="class">String</span>&gt; wakati(<span class="class">CharSequence</span> text);
 }</pre>
-<b>Morphemeクラス</b>
+<h3>Morphemeクラス</h3>
 <pre>
 <span class="keyword">package</span> net.reduls.igo;
 
@@ -200,7 +203,7 @@ Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
  *    (surface.lengthを積算していくだけではズレが生じる可能性がある)
  */</span></pre>
 
-    <h3>・サンプルコード</h3>
+    <h3>サンプルコード</h3>
 <pre>
 <span class="keyword">import</span> java.io.BufferedReader;
 <span class="keyword">import</span> java.io.InputStreamReader;
@@ -229,10 +232,10 @@ Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
 }
 </pre>
     
-    <h2>MeCabとの相違点</h2>
+    <h2 id="mecab">MeCabとの相違点</h2>
     <h3>解析結果</h3>
     Igoの形態素解析結果は、基本的にMeCabのそれに合わせるようになっている。<br />
-    ただし、ソースコードは全く別物なので、両者の結果が等しくなる保証はない。<br />
+    ただし、ソースコード的には全くの別物なので、両者の結果が等しくなる保証はない。<br />
     <br />
     特に、未知語の扱いに関しては、MeCabのドキュメントだけでは詳細が不明な箇所があったため、結果に差異が生じている可能性がある。<br />
     <br />
@@ -266,65 +269,117 @@ $ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo /var/igo/dic/ipa/
 
 ------------------------------	名詞,サ変接続,*,*,*,*,*
 EOS</pre>
-    Igoでの未知語の解釈の仕方を参考までに載せておく。<br />
-    TOOD
+    また、未知語に関連して文字カテゴリ定義<span class="small">(char.def)</span>の解釈の仕方も若干異なる箇所があるので、参考までに載せておく。
+    <pre>
+<span class="comment">※ 以下は、mecab-ipadic-2.7.0-20070801/char.defより文字カテゴリ定義部の一部を抜粋したもの。</span>
+
+<span class="comment">###################################################################################
+# 
+#  CHARACTER CATEGORY DEFINITION
+#
+#  CATEGORY_NAME INVOKE GROUP LENGTH
+#
+#   - CATEGORY_NAME: Name of category. you have to define DEFAULT class.
+#   - INVOKE: 1/0:   always invoke unknown word processing, evan when the word can be found in the lexicon
+#   - GROUP:  1/0:   make a new word by grouping the same chracter category
+#   - LENGTH: n:     1 to n length new words are added
+#</span>
+DEFAULT	       0 1 0  # DEFAULT is a mandatory category!
+SPACE	       0 1 0  
+KANJI	       0 0 2
+
+
+<span class="comment">## Igoでの解釈 ##
+# INVOKE: 単語辞書内に該当する単語がある場合でも未知語処理を行うかどうか (MeCabと同じ)
+# GROUP:  連続する同じカテゴリ(互換カテゴリ含む)の文字を一つの未知語としてまとめるかどうか 
+# LENGTH: 1からn文字までのすべてのパターンの連続する同じカテゴリ(互換カテゴリ含む※1)の文字を未知語として扱う
+　※1 MeCabがLENGTHの場合も互換カテゴリを考慮しているかどうかは不明(未調査)
+
+【例】
+[入力テキスト] 
+・"単語辞書を参照する"
+
+[条件]
+・INVOKEは1
+・入力テキストの先頭にポイント中
+
+[GROUP=1,LENGTH=2 の場合]
+・未知語: 単, 単語, 単語辞書
+
+[GROUP=0,LENGTH=2 の場合]
+・未知語: 単, 単語
+
+[GROUP=1,LENGTH=0 の場合]
+・未知語: 単語辞書 ※2
+
+[GROUP=0,LENGTH=0 の場合]
+・未知語: ※2
+
+※2 この場合の挙動がMeCabとは異なっている?
+　　MeCabではLENGTHが0の場合でも、必ず一文字分は未知語として扱うようになっている可能性がある。
+　　(上の例の場合では、'単'は文字カテゴリ定義に関わらず必ず未知語としてヒットすることになる)</span>
+</pre>
     <h3>機能</h3>
-    Igoは、MeCabとは異なり基本的な形態素解析機能しか提供しない。
+    　Igoは基本的な形態素解析機能しか提供しない。
     <h3>使用する辞書ファイル</h3>
-    Igoは、バイナリ辞書構築のために以下の四種類のファイルのみを用いる。
-    <br />TODO: 用語確認
+    　Igoはバイナリ辞書構築のために以下の四種類のファイルのみを用いる。
     <table border="1">
-      <tr><td>*.csv</td><td>単語辞書</td></tr>
-      <tr><td>matrix.def</td><td>品詞の連接コスト定義</td></tr>
-      <tr><td>char.def</td><td>文字カテゴリ定義(未知語用)</td></tr>
-      <tr><td>unk.def</td><td>未知語用辞書</td></tr>
+      <thead><td>ファイル名</td><td>概要</td></thead>
+      <tbody>
+	<tr><td>*.csv</td><td>単語辞書</td></tr>
+	<tr><td>matrix.def</td><td>品詞の連接コスト定義</td></tr>
+	<tr><td>char.def</td><td>文字カテゴリ定義(未知語用)</td></tr>
+	<tr><td>unk.def</td><td>未知語用辞書</td></tr>
+      </tbody>
     </table>
-    それ以外のファイルは一切考慮しないので、それらのファイルに依存してMeCabが提供している機能は使用不可能。
+    　これらファイル以外は一切考慮しないため、その他のファイルに依存してMeCabが提供している機能は使用不可。
     <br />
-    ex: 単語の定義で、品詞IDに-1を指定した場合、<b>{right,left}-id.def</b>から自動的に推定される機能があるが、それは不可能。
-    <br />
+    <span class="note">【例】MeCabには単語定義で、品詞IDに-1を指定した場合、<b>{right,left}-id.def</b>から自動的にIDを推定する機能があるが、それは不可能。</span>
 
     <h3>単語辞書のエントリフォーマット</h3>
-    MeCabでは、単語辞書(*.csv)及び未知語...(unk.def)での各単語エントリは、CSVフォーマットで記述されている。<br />
+    　MeCabでは、単語辞書(*.csv)及び未知語用品詞辞書(unk.def)での各単語エントリは、CSVフォーマットで記述されている。<br />
     <pre>
-<span class="comment">#...</span>
-<span class="comment">#ただし、csvの詳細な扱い方は不明</span>
-<span class="comment">#表総形,..,..</span>
-単語1,0,10,20,品詞1,品詞2
-"カンマ,を含む単語",20,30,50,品詞1,"カンマを,含む品詞",...</pre>
-対して、Igoのエントリフォーマットはより単純で、以下の形式からなる。
+<span class="comment"># MeCabでは、各単語エントリはCSVフォーマットで記述される。
+# IPA辞書の場合は、各カラムも意味は次の通り。
+#  - 表層形,左文脈ID,右文脈ID,コスト,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形,活用型,原形,読み,発音</span>
+洋裁,1285,1285,5618,名詞,一般,*,*,*,*,洋裁,ヨウサイ,ヨーサイ
+組打ち,1285,1285,5622,名詞,一般,*,*,*,*,組打ち,クミウチ,クミウチ
+<span class="string">"カンマ,を含む単語"</span>,20,30,50,名詞,*,*,*,*,*,<span class="string">"カンマ,を含む単語"</span>,カンマカンマヲフクムタンゴ,カンマカンマソフクムタンゴ
+　<span class="comment">※ ↑この単語の両端の「&quot;」は、単語の表層形には含まれない。後続のカラムも同様</span></pre>
+　対して、Igoのエントリフォーマットは以下の形式からなる。
 <pre>
-表層形{区切り文字}コスト{区切り文字}左ID{区切り文字}右ID{区切り文字}素性文字列{改行}
-
-表層形: 一文字以上.,,10,20,30,djfaofios
-区切り文字: デフォルトは","。'文字'とあるが正確には任意の長さの文字列が可能。
-コスト:
-左ID:
-右ID:
-素性文字列: 改行文字以外の任意の文字を含めることが可能。
-改行: 一つのエントリの終端を表す。ファイル末尾のエントリには不要。他の要素は改行文字を含むことは出来ない。
-</pre>
+<span class="comment"># Igoでのフォーマット: CSVではなく、単純に区切り文字で各カラムが区切られているだけ
+#  - 表層形,左文脈ID,右文脈ID,コスト,素性文字列
+#
+# ※ 一つのエントリは、改行(or ファイル末尾)で終端する
+# ※ ','は、改行を除く任意の区切り文字(文字列)に変更することが可能。
+# ※ 表層形は最低一文字必要なため、最初の一文字は区切り文字とは認識されない。
+#    ex] ,,10,10,30,... の場合、','という表層形として処理される。
+# ※ 素性文字列には、改行以外の任意の文字を使用可能</span>
+洋裁,1285,1285,5618,名詞,一般,*,*,*,*,洋裁,ヨウサイ,ヨーサイ
+<span class="string">"組打ち"</span>,1285,1285,5622,名詞,一般,*,*,*,*,組打ち,クミウチ,クミウチ
+　<span class="comment">※ ↑この単語の表層形は、'組打ち'ではなく'"組打ち"'となる</span></pre>
 
     
-    <h2>制限/注意点</h2>
+    <h2 id="limit">制限/注意点</h2>
     <h3>表層形に使用可能な文字の制限</h3>
-    現バージョンでの実装の都合上、単語の表層形には以下のような制限がある。
+    　現バージョンでの実装の都合上、単語の表層形には以下のような制限がある。
     <ul>
       <li>コード値'0x00'及び'0x01'の文字は含めることができない。</li>
-      <li>表層形の文字列は、コード値'0x02'の文字で始まってはいけない。</li>
+      <li>コード値'0x02'の文字で始まってはいけない。</li>
     </ul>
 
     <h3>バイナリ辞書のエンディアン</h3>
-    Igoでは、バイナリデータのエンディアンにネイティブ(nio.jisadof.nativeOrder())のものを用いるようになっている。<br />
-    そのため、例えば、リトルエンディアンの環境で作成したバイナリ辞書を、ビックエンディアンの環境で用いることは出来ない。
+    　Igoでは、バイナリデータのエンディアンにその環境でネイティブのもの<span class="small">(<b>java.nio.ByteOrder.nativeOrder()</b>の帰り値)</span>を用いるようになっている。<br />
+    　そのため、例えばリトルエンディアンの環境で作成したバイナリ辞書を、ビックエンディアンの環境で用いることは出来ない。
 
-    <h2>ライセンス</h2>
-    MITライセンス。配布物のCOPYINGファイルを参照。
+    <h2 id="license">ライセンス</h2>
+    　MITライセンス。配布物のCOPYINGファイルを参照。
     <br />
-    ただし、使用する辞書のライセンスは、配布元のそれに準ずる。
+    　ただし、使用する辞書のライセンスに関しては、辞書配布元のそれに準ずることとする。
 
-    <h2>バグ報告など</h2>
-    バグ報告、改善点指摘、要望、その他は、以下のいずれかからお願いします。
+    <h2 id="report">バグ報告など</h2>
+    　バグ報告、改善点指摘、要望、その他は、以下のいずれかからお願いします。
     <ul>
       <li><a href="http://sourceforge.jp/ticket/newticket.php?group_id=4980&display_mode=simple">SourceForgeチケット</a></li>
       <li><a href="http://sourceforge.jp/users/phjgt/">開発者ページ</a>に記載されているメールアドレス</li>
