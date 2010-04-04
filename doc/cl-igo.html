@@ -22,8 +22,10 @@
 	</ul>
 	<li><a href="#api">API</a></li>
 	<ul>
-	  <li>Tagger</li>
-	  <li>Morpheme</li>
+	  <li>*tagger*</li>
+	  <li>load-tagger</li>
+	  <li>parse</li>
+	  <li>wakati</li>
 	  <li>サンプルコード</li>
 	</ul>
 	<li><a href="#license">ライセンス</a></li>
@@ -109,106 +111,91 @@
 <span class="comment">=> ("すもも" "も" "もも" "も" "もも" "の" "うち")</span></pre>
     <!-- API -->
     <h2 id="api">API</h2>
-    Javaから形態素解析を行うために必要なクラスは以下の二つ。
+    　igoパッケージの公開API。
+    <h4>*tagger*スペシャル変数</h4>
+    　<b>parse</b>関数および<b>wakati</b>関数でデフォルトで使用されるtaggerオブジェクト。
+    <br />
+    　一番最後に呼び出された<b>load-tagger</b>関数が返したtaggerオブジェクトが束縛されている。
 
-    <h3>Taggerクラス</h3>
-    <pre>
-<span class="keyword">package</span> net.reduls.igo;
+    <h4>load-tagger関数</h4>
+    　バイナリ辞書を読み込む。
+    <pre>(load-tagger <i>dic-dir</i> <span class="keyword">&optional</span> (<i>feature-parser</i> #'identity))
+ <span class="comment">=></span> <i>tagger</i>
+      
+dic-dir: バイナリ辞書が配置してあるディレクトリのパス
+feature-parser: 素性文字列のマッピング関数。
+                この関数が返した結果がparse関数により使用される。
+                (<span class="keyword">lambda</span> (feature-string) ...)形式。
+tagger: 形態素解析用の辞書情報を有するtaggerオブジェクト。</pre>
 
-<span class="comment">/**
- * 形態素解析クラス
- *  - このクラスのインスタンスは不可変でありスレッドセーフ
- */</span>
-<span class="keyword">public final class</span> <span class="class">Tagger</span> {
-   <span class="comment">/**
-    * 解析用辞書を読み込んで、形態素解析器インスタンスを作成する
-    * 
-    * @param dataDir バイナリ辞書があるディレクトリ
-    * @throws FileNotFoundException 間違ったディレクトリが指定された場合に送出される
-    * @throws IOException その他の入出力エラーが発生した場合に送出される
-    */</span>
-   <span class="keyword">public</span> <span class="class">Tagger</span>(<span class="class">String</span> dataDir) <span class="keyword">throws</span> <span class="class">FileNotFoundException</span>,<span class="class">IOException</span>;
+    <h4>parse関数</h4>
+    　形態素解析を行う。
+    <br />
+    <span class="note">※ 結果の素性を破壊的に修正しない場合はスレッドセーフ</span>
+    <pre>(parse <i>text</i> <span class="keyword">&optional</span> (<i>tagger</i> *tagger*))
+ <span class="comment">=></span> <i>result</i>
+ 
+text: 形態素解析対象テキスト(string型)
+tagger: taggerオブジェクト。load-tagger関数の戻り値
+result: 右の形式の形態素解析結果のリスト。 <b>((表層形 素性<span class="comment">※1</span> テキスト内での出現開始位置))</b>
 
-   <span class="comment">/**
-    * 形態素解析を行う
-    *
-    * @param text 解析対象テキスト
-    * @param result 解析結果の形態素が格納されるリスト. 末尾に追加される 
-    * @return 引数のresultオブジェクトが返される
-    */</span>
-   <span class="keyword">public</span> <span class="class">List</span><<span class="class">Morpheme</span>> parse(<span class="class">CharSequence</span> text, <span class="class">List</span><<span class="class">Morpheme</span>> result);
-   <span class="comment">/**
-    * 形態素解析を行う
-    *
-    * @param text 解析対象テキスト
-    * @return 解析結果の形態素が格納されているリスト
-    */</span>
-   <span class="keyword">public</span> <span class="class">List</span><<span class="class">Morpheme</span>> parse(<span class="class">CharSequence</span> text);
+<span class="comment">※1 素性には、load-tagger関数に渡したfeature-parser関数が返した結果が用いられる。
+　　なお、parse関数が返す素性は、同じtaggerオブジェクトで共有されている。
+　　そのため素性の破壊的な修正は、それを参照している他の箇所にも影響を与える。</span></pre>
+    <h4>wakati関数</h4>
+    　分かち書きを行う。
+    <br />
+    <span class="note">※ スレッドセーフ</span>
+    <pre>(wakati <i>text</i> <span class="keyword">&optional</span> (<i>tagger</i> *tagger*))
+ <span class="comment">=></span> <i>result</i>
+ 
+text: 形態素解析対象テキスト(string型)
+tagger: taggerオブジェクト。load-tagger関数の戻り値
+result: 分かち書きされた表層形(文字列)のリスト。</pre>
 
-   <span class="comment">/**
-    * 分かち書きを行う
-    *
-    * @param text 分かち書き対象テキスト
-    * @param result 分かち書きされた文字列が格納されるリスト. 末尾に追加される 
-    * @return 引数のresultオブジェクトが返される
-    */</span>
-   <span class="keyword">public</span> <span class="class">List</span>&lt;<span class="class">String</span>&gt; wakati(<span class="class">CharSequence</span> text, <span class="class">List</span>&lt;<span class="class">String</span>&gt; result);
-   <span class="comment">/**
-    * 分かち書きを行う
-    *
-    * @param text 分かち書き対象テキスト
-    * @return 分かち書きされた文字列が格納されているリスト 
-    */</span>
-   <span class="keyword">public</span> <span class="class">List</span>&lt;<span class="class">String</span>&gt; wakati(<span class="class">CharSequence</span> text);
-}</pre>
-<h3>Morphemeクラス</h3>
-<pre>
-<span class="keyword">package</span> net.reduls.igo;
-
-<span class="comment">/**
- * 形態素クラス
- *  - このクラスのインスタンスは不可変でありスレッドセーフ
- */</span>
-<span class="keyword">public final class</span> <span class="class">Morpheme</span> {
-  <span class="keyword">public final</span> <span class="class">String</span> surface;  <span class="comment">// 形態素の表層形</span>
-  <span class="keyword">public final</span> <span class="class">String</span> feature;  <span class="comment">// 形態素の素性文字列</span>
-  <span class="keyword">public final</span> <span class="class">int</span>    start;    <span class="comment">// 入力テキスト内での形態素の出現開始位置 ※1</span>
-}
-<span class="comment">/**
- * ※1 ' '(0x20)などの空白文字は、解析結果形態素列から除外されるため、
- *    各形態素と入力テキストの対応を正確に取得するためには、このフィールドを用いる必要がある。
- *    (surface.lengthを積算していくだけではズレが生じる可能性がある)
- */</span></pre>
 
     <h3>サンプルコード</h3>
-<pre>
-<span class="keyword">import</span> java.io.BufferedReader;
-<span class="keyword">import</span> java.io.InputStreamReader;
-<span class="keyword">import</span> java.io.IOException;
-<span class="keyword">import</span> net.reduls.igo.Tagger;
-<span class="keyword">import</span> net.reduls.igo.Morpheme;
+    　<a href="http://mecab.sourceforge.net/dic-detail.html">MeCabでの例</a>を真似て、cl-igoでAuto Linkを行うサンプルを載せる。<br />
+    <span class="note">※ ただし、MeCabの例とは結構異なっている。</span>
+    　<pre>
+<span class="comment">;;;; Auto Linkのサンプル</span>
+<span class="comment">;;;;  - 入力テキストの形態素解析を行い、品詞が名詞のものにはリンクを貼る</span> 
+<span class="comment">;;;;  - 辞書にはIPA辞書を使用。 ※ そのためリンクURLが変</span> 
+(<span class="keyword">require</span> :igo)
 
-<span class="comment">/**
- * 標準入力からテキストを読み込んで、形態素解析結果を標準出力に出力する
- *  - コンパイル: javac -cp igo-0.4.2.jar Sample.java
- *  - 実行: java -cp igo-0.4.2.jar:. Sample &lt;バイナリ辞書ディレクトリ&gt;
- */</span>
-<span class="keyword">public class</span> <span class="class">Sample</span> {
-   <span class="keyword"> public static</span> <span class="class">void</span> main(<span class="class">String</span>[] args) <span class="keyword">throws</span> <span class="class">IOException</span> {
-        if(args.length != 1)
-            <span class="class">System</span>.exit(1);
-        
-        <span class="keyword">final</span> <span class="class">String</span> dicDir = args[0];
-        <span class="keyword">final</span> <span class="class">Tagger</span> tagger = <span class="keyword">new</span> <span class="class">Tagger</span>(dicDir);
-        <span class="keyword">final</span> <span class="class">BufferedReader</span> br = <span class="keyword">new</span> <span class="class">BufferedReader</span>(<span class="keyword">new</span> <span class="class">InputStreamReader</span>(<span class="class">System</span>.in));
+<span class="comment">;; Auto Link用の素性文字列パーサ</span>
+(<span class="keyword">defun</span> autolink-parser (feature)
+  <span class="comment">;; 品詞が名詞の単語にはリンクを貼る</span>
+  (let ((link? (string= feature <span class="string">"名詞"</span> :end1 2)))
+    (if link?
+        (lambda (word-surface)
+          (format nil <span class="string">"&lt;a href=~S&gt;~A&lt;/a&gt;"</span> feature word-surface))
+      #'identity)))
 
-        <span class="keyword">for</span>(<span class="class">String</span> line=br.readLine(); line!=null; line=br.readLine())
-            <span class="keyword">for</span>(<span class="class">Morpheme</span> m : tagger.parse(line))
-                <span class="class">System</span>.out.println(m.surface+<span class="string">"\t"</span>+m.feature);
-    }
-}
+<span class="comment">;; Auto Link用のtaggerをロード</span>
+(igo:load-tagger <span class="string">"/path/to/dic-dir/"</span> #'autolink-parser)
+
+<span class="comment">;; 入力テキストのAuto Linkを行う関数</span>
+(<span class="keyword">defun</span> autolink (text)
+  (with-output-to-string (out)
+    (loop FOR (surface autolink-fn) IN (igo:parse text) DO
+      <span class="comment">;; 素性関数(autolink-parserの戻り値)を表層形に適用し、結果を集める</span>
+      (princ (funcall autolink-fn surface) out))))</pre>
+    　実行例。
+    <pre>
+(igo:parse <span class="string">"すもももももももものうち"</span>)
+<span class="comment"> => (("すもも" #&lt;CLOSURE # {C0989C5}&gt; 0) ("も" #&lt;FUNCTION IDENTITY&gt; 3)
+     ("もも" #&lt;CLOSURE # {C0A9CF5}&gt; 4) ("も" #&lt;FUNCTION IDENTITY&gt; 6)
+     ("もも" #&lt;CLOSURE # {C0A9CF5}&gt; 7) ("の" #&lt;FUNCTION IDENTITY&gt; 9)
+     ("うち" #&lt;CLOSURE # {C089C75}&gt; 10))</span>
+
+(autolink <span class="string">"すもももももももものうち"</span>)
+<span class="comment"> => "&lt;a href=\&quot;名詞,一般,*,*,*,*,すもも,スモモ,スモモ\&quot;&gt;すもも&lt;/a&gt;も&lt;a href=\&quot;名詞,一般,*,*,*,*,もも,モモ,モモ\&quot;&gt;もも&lt;/a&gt;も
+    &lt;a href=\&quot;名詞,一般,*,*,*,*,もも,モモ,モモ\&quot;&gt;もも&lt;/a&gt;の&lt;a href=\&quot;名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ\&quot;&gt;うち&lt;/a&gt;"</span>
+
+(princ *)  <span class="comment">; 見やすくするためにHTMLエスケープを外している</span>
+<span class="comment"> => <a href="名詞,一般,*,*,*,*,すもも,スモモ,スモモ">すもも</a>も<a href="名詞,一般,*,*,*,*,もも,モモ,モモ">もも</a>も<a href="名詞,一般,*,*,*,*,もも,モモ,モモ">もも</a>の<a href="名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ">うち</a></span>
 </pre>
-
     <!-- ライセンス -->
     <h2 id="license">ライセンス</h2>
     　MITライセンス。配布物のCOPYINGファイルを参照。
