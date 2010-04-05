@@ -50,7 +50,8 @@
 
 (defun read (code-stream)
   (declare (code-stream code-stream))
-  (with-slots (position surrogate?) code-stream
+  (symbol-macrolet ((position   (position code-stream))
+		    (surrogate? (surrogate? code-stream)))
     (cond (surrogate? 
 	   (setf surrogate? nil)
 	   (prog1 (low-surrogate (code code-stream))
@@ -69,7 +70,8 @@
 
 (defun unread (code-stream)
   (declare (code-stream code-stream))
-  (with-slots (position surrogate?) code-stream
+  (symbol-macrolet ((position   (position code-stream))
+		    (surrogate? (surrogate? code-stream)))
     (if surrogate? 
 	(setf surrogate? nil)
       (decf position))))
