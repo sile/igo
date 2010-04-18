@@ -41,7 +41,7 @@
 
 (defun high-surrogate (code)
   (declare (character-code code))
-  (+ #xB800 (- (ldb (byte 11 10) code) #b1000000)))
+  (+ #xD800 (- (ldb (byte 11 10) code) #b1000000)))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; external function
