@@ -16,3 +16,8 @@
         FOR end = (search delim seq :start2 beg)
         COLLECT (subseq seq beg end)
         WHILE end))
+
+(defmacro muffle-warn (&body body)
+  `(locally 
+    #+SBCL (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+    ,@body))

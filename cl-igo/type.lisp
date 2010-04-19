@@ -4,7 +4,8 @@
 	   character-code
 	   utf16-code
 	   negative-fixnum
-	   n-byte))
+	   n-byte
+	   simple-characters))
 (in-package :igo.type)
   
 (deftype array-index ()    `(integer 0 ,array-total-size-limit))
@@ -13,3 +14,4 @@
 (deftype negative-fixnum ()`(integer ,most-negative-fixnum -1))
 (deftype n-byte (byte-size signed?) 
   `(,(if signed? 'signed-byte 'unsigned-byte) ,(* byte-size 8)))
+(deftype simple-characters () '(simple-array character (*)))

@@ -2,7 +2,7 @@
 
 ;;;;;;;;;;;
 ;;; declaim
-(declaim (inline coerce-to-simple-string set-mincost-node)
+(declaim (inline coerce-to-simple-characters set-mincost-node)
 	 #.*optimize-fastest*)
 
 ;;;;;;;;;;
@@ -61,16 +61,17 @@
     
     (vn:prev (set-mincost-node (vn:make-bos/eos) (aref nodes len) mtx wdc))))
 
-(defun coerce-to-simple-string (s)
-  (declare (string s))
-  (the simple-string
-       (if (simple-string-p s)
-	   s
-	 (copy-seq s))))
+(defun coerce-to-simple-characters (s)
+  (the igo.type:simple-characters
+       (etypecase s
+         (igo.type:simple-characters s)
+	 (simple-base-string #1=(make-array (length s) :element-type 'character 
+						       :initial-contents s))
+	 (string (muffle-warn #1#)))))
 
 (defmacro parse-then-map-result ((viterbi-node text tagger) &body body)
   (let ((result (gensym)))
-    `(let ((,text (coerce-to-simple-string ,text))
+    `(let ((,text (coerce-to-simple-characters ,text))
 	   (,result '()))
        (check-type ,tagger tagger)
        (do ((,viterbi-node (parse-impl ,tagger (code-stream:make ,text 0) (length ,text))
