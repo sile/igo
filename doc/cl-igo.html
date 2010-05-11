@@ -178,7 +178,7 @@ result: 分かち書きされた表層形(文字列)のリスト。</pre>
       #'identity)))
 
 <span class="comment">;; Auto Link用のtaggerをロード</span>
-(igo:load-tagger <span class="string">"/path/to/dic-dir/"</span> #'autolink-parser)
+(igo:load-tagger <span class="string">"/path/to/dic-dir/"</span> <span class="keyword">:feature-parser</span> #'autolink-parser)
 
 <span class="comment">;; 入力テキストのAuto Linkを行う関数</span>
 (<span class="keyword">defun</span> autolink (text)
