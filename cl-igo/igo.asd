@@ -20,4 +20,4 @@
 	       (:file "word-dic")
 	       (:file "unknown")
 	       (:file "tagger")
-	       #+C (:file "delete-nicknames")))
+	       (:file "delete-nicknames")))
