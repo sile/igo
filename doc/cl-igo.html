@@ -5,7 +5,7 @@
     <link type="text/css" rel="stylesheet" href="igo.css" />
   </head>
   <body>
-    <h1>cl-igo - Common Lisp形態素解析器 (ver 0.2.3)</h1>
+    <h1>cl-igo - Common Lisp形態素解析器 (ver 0.3.0)</h1>
     <hr />
 
     <div class="toc">
@@ -119,24 +119,27 @@
 
     <h4>load-tagger関数</h4>
     　バイナリ辞書を読み込む。
-    <pre>(load-tagger <i>dic-dir</i> <span class="keyword">&optional</span> (<i>feature-parser</i> #'identity))
+    <pre>(load-tagger <i>dic-dir</i> <span class="keyword">&key</span> (<i>feature-parser</i> #'identity)) (<i>bind-special</i> t))
  <span class="comment">=></span> <i>tagger</i>
       
 dic-dir: バイナリ辞書が配置してあるディレクトリのパス
 feature-parser: 素性文字列のマッピング関数。
                 この関数が返した結果がparse関数により使用される。
                 (<span class="keyword">lambda</span> (feature-string) ...)形式。
+bind-special: 関数が返すtaggerオブジェクトを*tagger*スペシャル変数に束縛するかどうか。
 tagger: 形態素解析用の辞書情報を有するtaggerオブジェクト。</pre>
 
     <h4>parse関数</h4>
     　形態素解析を行う。
     <br />
     <span class="note">※ 結果の素性を破壊的に修正しない場合はスレッドセーフ</span>
-    <pre>(parse <i>text</i> <span class="keyword">&optional</span> (<i>tagger</i> *tagger*))
+    <pre>(parse <i>text</i> <span class="keyword">&key</span> (<i>tagger</i> *tagger*) (<i>start</i> 0) (<i>end</i> (length <i>text</i>)))
  <span class="comment">=></span> <i>result</i>
  
 text: 形態素解析対象テキスト(string型)
 tagger: taggerオブジェクト。load-tagger関数の戻り値
+start: 対象テキスト内での解析開始位置
+end: 対象テキスト内での解析終端位置
 result: 右の形式の形態素解析結果のリスト。 <b>((表層形 素性<span class="comment">※1</span> テキスト内での出現開始位置))</b>
 
 <span class="comment">※1 素性には、load-tagger関数に渡したfeature-parser関数が返した結果が用いられる。
@@ -146,11 +149,13 @@ result: 右の形式の形態素解析結果のリスト。 <b>((表層形 素�
     　分かち書きを行う。
     <br />
     <span class="note">※ スレッドセーフ</span>
-    <pre>(wakati <i>text</i> <span class="keyword">&optional</span> (<i>tagger</i> *tagger*))
+    <pre>(wakati <i>text</i> <span class="keyword">&optional</span> (<i>tagger</i> *tagger*) (<i>start</i> 0) (<i>end</i> (length <i>text</i>)))
  <span class="comment">=></span> <i>result</i>
  
 text: 形態素解析対象テキスト(string型)
 tagger: taggerオブジェクト。load-tagger関数の戻り値
+start: 対象テキスト内での解析開始位置
+end: 対象テキスト内での解析終端位置
 result: 分かち書きされた表層形(文字列)のリスト。</pre>
 
 
