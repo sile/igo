@@ -88,15 +88,18 @@
 	(indices (word-dic-indices wdic))
 	(trie (word-dic-trie wdic)))
     (trie:each-common-prefix (end id cs trie)
-      (loop FOR i fixnum FROM (aref indices id) BELOW (aref indices (1+ id)) DO
+      #+SBCL (assert (the T (< (1+ id) (length indices))))
+      (loop FOR i OF-TYPE igo.type:array-index FROM (aref indices id) BELOW (aref indices (1+ id)) DO
         (push (vn:make i start end (left-id i wdic) (right-id i wdic) nil)
 	      result)))
     (setf (code-stream:position cs) start))
   result)
 
 (defun search-from-trie-id (id start end space? result wdic)
-  (declare #.igo::*optimize-fastest*)
+  (declare #.igo::*optimize-fastest*
+	   (igo.type:array-index id))
   (let ((indices (word-dic-indices wdic)))
+    #+SBCL (assert (the T (< (1+ id) (length indices))))
     (loop FOR i fixnum FROM (aref indices id) BELOW (aref indices (1+ id)) DO
       (push (vn:make i start end (left-id i wdic) (right-id i wdic) space?)
 	    result)))
