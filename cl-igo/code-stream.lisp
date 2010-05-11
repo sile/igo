@@ -13,15 +13,16 @@
 
 ;;;;;;;;;;;
 ;;; declaim
-(declaim (inline end? code low-surrogate high-surrogate)
+(declaim (inline end? code low-surrogate high-surrogate make)
 	 (optimize (speed 3) (debug 0) (safety 0) (compilation-speed 0))
 	 (ftype (function (code-stream) utf16-code) read))
 
 ;;;;;;;;;;
 ;;; struct
-(defstruct (code-stream (:constructor make (source start &aux (position start)))
+(defstruct (code-stream (:constructor make (source &aux (position 0)))
 			(:conc-name ""))
-  (source    ""   :type simple-characters :read-only t)
+  
+  (source    ""   :type charseq:charseq :read-only t)
   (position   0   :type array-index)
   (surrogate? nil :type boolean))
 
@@ -33,7 +34,7 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; internal function
 (defun code (code-stream)
-  (char-code (char (source code-stream) (position code-stream))))
+  (char-code (charseq:ref (source code-stream) (position code-stream))))
 
 (defun low-surrogate (code)
   (declare (character-code code))
@@ -46,32 +47,22 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; external function
 (defun end? (code-stream)
-  (= (position code-stream) (length (source code-stream))))
+  (= (position code-stream) (charseq:length (source code-stream))))
 
 (defun read (code-stream)
   (declare (code-stream code-stream))
   (symbol-macrolet ((position   (position code-stream))
 		    (surrogate? (surrogate? code-stream)))
-    (cond (surrogate? 
-	   (setf surrogate? nil)
-	   (prog1 (low-surrogate (code code-stream))
-	     (incf position)))
-
-	  ((end? code-stream)
+    (cond ((end? code-stream)
 	   +TERMINATE-CODE+)
 
 	  (t 
 	   (let ((code (code code-stream)))
-	     (if (> code #xFFFF)
-		 (progn (setf surrogate? t)
-			(high-surrogate code))
-	       (progn (incf position)
-		      code)))))))
+	     (incf position)
+	     code)))))
 
 (defun unread (code-stream)
   (declare (code-stream code-stream))
   (symbol-macrolet ((position   (position code-stream))
 		    (surrogate? (surrogate? code-stream)))
-    (if surrogate? 
-	(setf surrogate? nil)
-      (decf position))))
+    (decf position)))
