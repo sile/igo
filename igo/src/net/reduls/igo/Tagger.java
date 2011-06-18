@@ -124,17 +124,44 @@ public final class Tagger {
 
     private ViterbiNode setMincostNode(ViterbiNode vn, ArrayList<ViterbiNode> prevs) {
 	final ViterbiNode f = vn.prev = prevs.get(0);
-        vn.cost = f.cost + mtx.linkCost(f.rightId, vn.leftId);
+        int minCost = f.cost + mtx.linkCost(f.rightId, vn.leftId);
 
         for(int i=1; i < prevs.size(); i++) {
             final ViterbiNode p = prevs.get(i);
 	    final int cost = p.cost + mtx.linkCost(p.rightId, vn.leftId);
-	    if(cost < vn.cost) {
-		vn.cost = cost;
+	    if(cost < minCost) {
+		minCost = cost;
 		vn.prev = p;
 	    }
 	}
-	vn.cost += wdc.cost(vn.wordId);
+	vn.cost += minCost;
 	return vn;
+    }
+
+    private final class MakeLattice implements WordDic.Callback {
+        private final ArrayList<ArrayList<ViterbiNode>> nodesAry;
+        private int i;
+        private ArrayList<ViterbiNode> prevs;
+        private boolean empty=true;
+
+        public MakeLattice(ArrayList<ArrayList<ViterbiNode>> nodesAry) {
+            this.nodesAry = nodesAry;
+        }
+        
+        public void set(int i) {
+            this.i = i;
+            prevs = nodesAry.get(i);
+            empty = true;
+        }
+
+        public void call(ViterbiNode vn) {
+            empty=false;
+            if(vn.isSpace)
+                nodesAry.get(i+vn.length).addAll(prevs);
+            else
+                nodesAry.get(i+vn.length).add(setMincostNode(vn, prevs));
+        }
+        
+        public boolean isEmpty() { return empty; }
     }
 }

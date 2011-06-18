@@ -4,7 +4,7 @@ package net.reduls.igo.dictionary;
  * Viterbiアルゴリズムで使用されるノード
  */
 public final class ViterbiNode {
-    public int         cost = 0;    // 始点からノードまでの総コスト
+    public int         cost;        // 始点からノードまでの総コスト
     public ViterbiNode prev = null; // コスト最小の前方のノードへのリンク
 
     public final int   wordId;      // 単語ID
@@ -15,16 +15,17 @@ public final class ViterbiNode {
 
     public final boolean isSpace;   // 形態素の文字種(文字カテゴリ)が空白文字かどうか
     
-    public ViterbiNode(int wid, int beg, short len, short l, short r, boolean space) {
+    public ViterbiNode(int wid, int beg, short len, short wordCost, short l, short r, boolean space) {
 	wordId = wid;
 	leftId = l;
 	rightId =r;
 	length = len;
+        cost = wordCost;
 	isSpace = space;
 	start = beg;
     }
 
     public static ViterbiNode makeBOSEOS() { 
-	return new ViterbiNode(0,0,(short)0,(short)0,(short)0,false); 
+	return new ViterbiNode(0,0,(short)0,(short)0,(short)0,(short)0,false); 
     }
 }
