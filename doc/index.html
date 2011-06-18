@@ -5,13 +5,14 @@
     <link type="text/css" rel="stylesheet" href="igo.css" />
   </head>
   <body>
-    <h1>Igo - Java形態素解析器 (ver 0.4.2)</h1>
+    <h1>Igo - Java形態素解析器 (ver 0.4.3)</h1>
     <hr />
 
     <div class="toc">
       <h3>目次</h3>
       <ul>
 	<li><a href="#feature">概要/特徴</a></li>
+        <li><a href="#releasenote">リリースノート</a></li>
 	<li><a href="#usage">インストール/使い方</a></li>
 	<ul>
 	  <li>jarファイル</li>
@@ -56,18 +57,26 @@
       <li>スレッドセーフ。</li>
     </ul>
 
+    <h2 id="releasenote">リリースノート</h2>
+    <ul>
+      <li>version 0.4.3: 2011年06月17日</li>
+      <ul>
+        <li>形態素解析部の微細なパフォーマンスチューニング</li>
+      </ul>
+    </ul>
+
     <h2 id="usage">インストール/使い方</h2>
     <h3>1) jarファイルの取得/作成</h3>
     　jarファイルは以下のいずれかの方法で取得/作成する。
     <ol type="a">
-      <li><a href="http://sourceforge.jp/projects/igo/releases/">ダウンロード画面</a>より<b>igo-0.4.2.jar</b>をダウンロードする。</li>
-      <li>aのjarファイルが何らかの理由で使用できない場合は、同画面よりソースコード一式<span class="small">(<b>igo-0.4.2-src.tar.gz</b>)</span>を取得し、以下の手順に従ってjarファイルを作成する。
+      <li><a href="http://sourceforge.jp/projects/igo/releases/">ダウンロード画面</a>より<b>igo-0.4.3.jar</b>をダウンロードする。</li>
+      <li>aのjarファイルが何らかの理由で使用できない場合は、同画面よりソースコード一式<span class="small">(<b>igo-0.4.3-src.tar.gz</b>)</span>を取得し、以下の手順に従ってjarファイルを作成する。
 	<br />
 	<span class="note">※ ソースコードのビルドには、<a href="http://ant.apache.org/">Apache Ant</a>が必要。</span></li>
     </ol>
     <pre>
-$ tar zxvf igo-0.4.2-src.tar.gz  <span class="comment"># ソース解凍</span>
-$ cd igo-0.4.2-src               <span class="comment"># ディレクトリ移動</span>
+$ tar zxvf igo-0.4.3-src.tar.gz  <span class="comment"># ソース解凍</span>
+$ cd igo-0.4.3-src               <span class="comment"># ディレクトリ移動</span>
 $ ant                            <span class="comment"># ビルド & jarファイル作成</span></pre> 
 
     <h3>2) 解析用辞書作成</h3>
@@ -79,13 +88,13 @@ $ ant                            <span class="comment"># ビルド & jarファ�
 $ tar mecab-ipadic-2.7.0-20070801.tar.gz  
 
 <span class="comment"># 解析用バイナリ辞書の作成</span>
-$ java -cp igo-0.4.2.jar net.reduls.igo.bin.BuildDic ipadic mecab-ipadic-2.7.0-20070801 EUC-JP</pre>
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.BuildDic ipadic mecab-ipadic-2.7.0-20070801 EUC-JP</pre>
     <span class="note">※ なおIgoのテキスト辞書の解釈の仕方は、若干だがMeCabのそれとは異なるところがある。詳しくは<a href="#mecab">こちら</a>を参照のこと。</span>
 
     <h3>3) 形態素解析</h3>
     <pre>
 <span class="comment"># 形態素解析</span>
-$ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo ipadic 
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.Igo ipadic 
 すもももももももものうち <b><i>[Enter]</i></b>  
 
 すもも	名詞,一般,*,*,*,*,すもも,スモモ,スモモ
@@ -98,7 +107,7 @@ $ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo ipadic
 EOS
 
 <span class="comment"># 分かち書き</span>
-$ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo -wakati ipadic 
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.Igo -wakati ipadic 
 すもももももももものうち <b><i>[Enter]</i></b>
   
 すもも も もも も もも の うち</pre>
@@ -108,7 +117,7 @@ $ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo -wakati ipadic
     <h3>BuildDicコマンド</h3>
     バイナリ辞書を作成するためのコマンド
     <pre>
-$ java -cp igo-0.4.2.jar net.reduls.igo.bin.BuildDic
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.BuildDic
 Usage: java net.reduls.igo.bin.BuildDic <i>&lt;output directory&gt; &lt;input directory&gt; &lt;encoding&gt; [delimiter]</i>
 <span class="comment">
 #########
@@ -121,7 +130,7 @@ Usage: java net.reduls.igo.bin.BuildDic <i>&lt;output directory&gt; &lt;input di
     <h3>Igoコマンド</h3>
     標準入力から読み込んだテキストに対して形態素解析を行うコマンド
     <pre>
-$ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.Igo
 Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
 <span class="comment">
 #########
@@ -213,8 +222,8 @@ Usage: java net.reduls.igo.bin.Igo <i>[-wakati] &lt;dictionary directory&gt;</i>
 
 <span class="comment">/**
  * 標準入力からテキストを読み込んで、形態素解析結果を標準出力に出力する
- *  - コンパイル: javac -cp igo-0.4.2.jar Sample.java
- *  - 実行: java -cp igo-0.4.2.jar:. Sample &lt;バイナリ辞書ディレクトリ&gt;
+ *  - コンパイル: javac -cp igo-0.4.3.jar Sample.java
+ *  - 実行: java -cp igo-0.4.3.jar:. Sample &lt;バイナリ辞書ディレクトリ&gt;
  */</span>
 <span class="keyword">public class</span> <span class="class">Sample</span> {
    <span class="keyword"> public static</span> <span class="class">void</span> main(<span class="class">String</span>[] args) <span class="keyword">throws</span> <span class="class">IOException</span> {
@@ -262,9 +271,9 @@ $ mecab
 EOS
 
 <span class="comment">###
-# Igo - 0.4.2
+# Igo - 0.4.3
 # 連接する未知語(SYMBOL)は一つの形態素となる</span>
-$ java -cp igo-0.4.2.jar net.reduls.igo.bin.Igo /var/igo/dic/ipa/
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.Igo /var/igo/dic/ipa/
 ------------------------------ <b><i>[Enter]</i></b>
 
 ------------------------------	名詞,サ変接続,*,*,*,*,*
