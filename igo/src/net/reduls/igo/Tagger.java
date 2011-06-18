@@ -87,27 +87,19 @@ public final class Tagger {
     private ViterbiNode parseImpl(CharSequence text) {
 	final int len = text.length();
 	final ArrayList<ArrayList<ViterbiNode>> nodesAry = new ArrayList<ArrayList<ViterbiNode>>(len+1);
-	final ArrayList<ViterbiNode> perResult = new ArrayList<ViterbiNode>();
 	
 	nodesAry.add(BOS_NODES);
 	for(int i=1; i <= len; i++) 
 	    nodesAry.add(new ArrayList<ViterbiNode>());
 	
-	for(int i=0; i < len; i++, perResult.clear()) {
-	    if(nodesAry.get(i).isEmpty()==false) {
-		wdc.search(text, i, perResult);       // 単語辞書から形態素を検索
-		unk.search(text, i, wdc, perResult);  // 未知語辞書から形態素を検索
-
-		final ArrayList<ViterbiNode> prevs = nodesAry.get(i);
-		for(int j=0; j < perResult.size(); j++) {
-                    final ViterbiNode vn = perResult.get(j);
-		    if(vn.isSpace)
-			nodesAry.get(i+vn.length).addAll(prevs);
-		    else
-			nodesAry.get(i+vn.length).add(setMincostNode(vn,prevs));
-		}
-	    }
-	}
+        MakeLattice fn = new MakeLattice(nodesAry);
+        for(int i=0; i < len; i++) {
+            if(nodesAry.get(i).isEmpty()==false) {
+                fn.set(i);
+                wdc.search(text, i, fn);      // 単語辞書から形態素を検索
+                unk.search(text, i, wdc, fn); // 未知語辞書から形態素を検索
+            }
+        }
 
 	ViterbiNode cur = setMincostNode(ViterbiNode.makeBOSEOS(), nodesAry.get(len)).prev;
 

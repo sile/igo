@@ -35,29 +35,30 @@ public final class WordDic {
 	}
     }
 
-    public void search(CharSequence text, int start, List<ViterbiNode> result) {
-	trie.eachCommonPrefix(text, start, new Collect(result));
+    public void search(CharSequence text, int start, Callback fn) {
+	trie.eachCommonPrefix(text, start, new WordDicCallbackCaller(fn));
     }
 
-    public void searchFromTrieId(int trieId, int start, int wordLength, boolean isSpace, List<ViterbiNode> result) {
+    public void searchFromTrieId(int trieId, int start, int wordLength, boolean isSpace, Callback fn) {
 	final int end = indices[trieId+1];
 	for(int i=indices[trieId]; i < end; i++)
-	    result.add(new ViterbiNode(i, start, (short)wordLength, costs[i], leftIds[i], rightIds[i], isSpace));
+	    fn.call(new ViterbiNode(i, start, (short)wordLength, costs[i], leftIds[i], rightIds[i], isSpace));
     }
 
     public String wordData(int wordId){
 	return data.substring(dataOffsets[wordId], dataOffsets[wordId+1]);
     }
     
-    private class Collect implements Searcher.Callback {
-	public final List<ViterbiNode> ms;
-	public Collect(List<ViterbiNode> result) { ms = result; }
+    private class WordDicCallbackCaller implements Searcher.Callback {
+	public WordDicCallbackCaller(Callback fn) { this.fn = fn; }
 	
 	public void call(int start, int offset, int trieId) {
 	    final int end = indices[trieId+1];
 	    for(int i=indices[trieId]; i < end; i++)
-		ms.add(new ViterbiNode(i, start, (short)offset, costs[i], leftIds[i], rightIds[i], false));
+		fn.call(new ViterbiNode(i, start, (short)offset, costs[i], leftIds[i], rightIds[i], false));
 	}
+
+        private final Callback fn;
     }
 
     public static interface Callback {
