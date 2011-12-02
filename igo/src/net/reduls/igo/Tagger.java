@@ -13,7 +13,9 @@ import net.reduls.igo.dictionary.ViterbiNode;
  * 形態素解析を行うクラス
  */
 public final class Tagger {
-    private static final ArrayList<ViterbiNode> BOS_NODES = new ArrayList<ViterbiNode>(1);
+    static class ViterbiNodeList extends ArrayList<ViterbiNode> {}
+
+    private static final ViterbiNodeList BOS_NODES = new ViterbiNodeList();
     static {
 	BOS_NODES.add(ViterbiNode.makeBOSEOS());
     }
@@ -86,22 +88,19 @@ public final class Tagger {
     
     private ViterbiNode parseImpl(CharSequence text) {
 	final int len = text.length();
-	final ArrayList<ArrayList<ViterbiNode>> nodesAry = new ArrayList<ArrayList<ViterbiNode>>(len+1);
-	
-	nodesAry.add(BOS_NODES);
-	for(int i=1; i <= len; i++) 
-	    nodesAry.add(new ArrayList<ViterbiNode>());
+	final ViterbiNodeList[] nodesAry = new ViterbiNodeList[len+1];
+	nodesAry[0] = BOS_NODES;
 	
         MakeLattice fn = new MakeLattice(nodesAry);
         for(int i=0; i < len; i++) {
-            if(nodesAry.get(i).isEmpty()==false) {
+            if(nodesAry[i] != null) {
                 fn.set(i);
                 wdc.search(text, i, fn);      // 単語辞書から形態素を検索
                 unk.search(text, i, wdc, fn); // 未知語辞書から形態素を検索
             }
         }
 
-	ViterbiNode cur = setMincostNode(ViterbiNode.makeBOSEOS(), nodesAry.get(len)).prev;
+	ViterbiNode cur = setMincostNode(ViterbiNode.makeBOSEOS(), nodesAry[len]).prev;
 
         // reverse
         ViterbiNode head = null;
@@ -114,7 +113,7 @@ public final class Tagger {
         return head;
     }
 
-    private ViterbiNode setMincostNode(ViterbiNode vn, ArrayList<ViterbiNode> prevs) {
+    private ViterbiNode setMincostNode(ViterbiNode vn, ViterbiNodeList prevs) {
 	final ViterbiNode f = vn.prev = prevs.get(0);
         int minCost = f.cost + mtx.linkCost(f.rightId, vn.leftId);
 
@@ -131,27 +130,34 @@ public final class Tagger {
     }
 
     private final class MakeLattice implements WordDic.Callback {
-        private final ArrayList<ArrayList<ViterbiNode>> nodesAry;
+        private final ViterbiNodeList[] nodesAry;
         private int i;
-        private ArrayList<ViterbiNode> prevs;
+        private ViterbiNodeList prevs;
         private boolean empty=true;
 
-        public MakeLattice(ArrayList<ArrayList<ViterbiNode>> nodesAry) {
+        public MakeLattice(ViterbiNodeList[] nodesAry) {
             this.nodesAry = nodesAry;
         }
         
         public void set(int i) {
             this.i = i;
-            prevs = nodesAry.get(i);
+            prevs = nodesAry[i];
+            nodesAry[i] = null;
             empty = true;
         }
 
         public void call(ViterbiNode vn) {
             empty=false;
+
+            final int end = i+vn.length;
+            if(nodesAry[end]==null)
+                nodesAry[end] = new ViterbiNodeList();
+            ViterbiNodeList ends = nodesAry[end];
+
             if(vn.isSpace)
-                nodesAry.get(i+vn.length).addAll(prevs);
+                nodesAry[end].addAll(prevs);
             else
-                nodesAry.get(i+vn.length).add(setMincostNode(vn, prevs));
+                nodesAry[end].add(setMincostNode(vn, prevs));
         }
         
         public boolean isEmpty() { return empty; }
