@@ -61,7 +61,7 @@ public final class Matrix {
 			// そのためtmpMatrix配列を用いて、コスト値の並び順を変更し、
 			// matrix[rightId][leftId]とったように、rightIdが第一添字になるようにした方が
 			// メモリアクセスの局所性が高まり(多分)、若干だが処理速度が向上する。
-			tmpMatrix[j*rightNum + i] = cost;  
+			tmpMatrix[j*leftNum + i] = cost;  
 		    }
 		for(short cost : tmpMatrix)
 		    fmos.putShort(cost);

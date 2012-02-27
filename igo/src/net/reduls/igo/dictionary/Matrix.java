@@ -26,6 +26,6 @@ public final class Matrix {
      * 形態素同士の連接コストを求める
      */
     public short linkCost(int leftId, int rightId) {
-	return matrix[rightId*rightSize + leftId];
+	return matrix[rightId*leftSize + leftId];
     }
 }
