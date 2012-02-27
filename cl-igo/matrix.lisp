@@ -32,4 +32,4 @@
   (declare ((unsigned-byte 16) left-id right-id))
   (the (signed-byte 16) 
     (aref (matrix matrix)
-	  (+ (* (right-size matrix) right-id) left-id))))
+	  (+ (* (left-size matrix) right-id) left-id))))
