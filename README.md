@@ -7,6 +7,7 @@ JavaおよびCommon Lispで実装されたミニマムな形態素解析器
 
 - [Java版ドキュメント](https://igo.osdn.jp/)
 - [Common Lisp版ドキュメント](https://igo.osdn.jp/cl-igo.html)
+- [ビルド済みパッケージ](https://osdn.net/projects/igo/releases/)
 
 Link
 ----
